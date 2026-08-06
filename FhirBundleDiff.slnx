@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FhirDiff.Ai/FhirDiff.Ai.csproj" />
+    <Project Path="src/FhirDiff.Api/FhirDiff.Api.csproj" />
+    <Project Path="src/FhirDiff.Core/FhirDiff.Core.csproj" />
+    <Project Path="src/FhirDiff.Web/FhirDiff.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FhirDiff.Ai.Tests/FhirDiff.Ai.Tests.csproj" />
+    <Project Path="tests/FhirDiff.Core.Tests/FhirDiff.Core.Tests.csproj" />
+  </Folder>
+</Solution>

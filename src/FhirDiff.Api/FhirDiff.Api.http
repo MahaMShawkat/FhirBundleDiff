@@ -1,0 +1,6 @@
+@FhirDiff.Api_HostAddress = http://localhost:5047
+
+GET {{FhirDiff.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
