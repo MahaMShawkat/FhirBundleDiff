@@ -6,7 +6,7 @@ namespace FhirDiff.Core.Models
 {
     public class BundleDiffResult
     {
-        List<ResourceChange> Changes { get; set; }
+        private List<ResourceChange> Changes { get; set; }
         public int AddedCount => Changes.Count(c => c.ChangeType == ChangeType.Added);
         public int RemovedCount => Changes.Count(c => c.ChangeType == ChangeType.Removed);
         public int ModifiedCount => Changes.Count(c => c.ChangeType == ChangeType.Modified);
