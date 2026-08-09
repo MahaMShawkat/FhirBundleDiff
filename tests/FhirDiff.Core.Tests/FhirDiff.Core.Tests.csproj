@@ -28,4 +28,23 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TestData\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestData\Aaron697_Brekke496_2fa15bc7-8866-461a-9000-f739e425860a.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Aaron697_Stiedemann542_41166989-975d-4d17-b9de-17f94cb3eec1.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Abby752_Kuvalis369_2b083021-e93f-4991-bf49-fd4f20060ef8.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Abel832_Connelly992_29e51479-f742-4474-8f8e-d2607d5269f6.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
