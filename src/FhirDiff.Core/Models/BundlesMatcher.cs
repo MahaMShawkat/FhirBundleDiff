@@ -7,21 +7,24 @@ namespace FhirDiff.Core.Models
 {
     public class BundlesMatcher
     {
-        public Dictionary<ResourceKey, Resource> GetBundleResources(Bundle bundle)
+        public BundleResources GetBundleResources(Bundle bundle)
         {
-            Dictionary<ResourceKey, Resource> bundleResources = new Dictionary<ResourceKey, Resource>();
+            var resourcesWithId = new Dictionary<ResourceKey, Resource>();
+            var resourcesWithoutId = new List<Resource>();
 
             foreach (var entry in bundle.Entry)
             {
                 if (entry.Resource.Id is null)
-                    throw new InvalidOperationException($"{entry.Resource.TypeName} Entry has no Id.Cannot match.");
+                {
+                    resourcesWithoutId.Add(entry.Resource);
+                }
                 else
                 {
                     var resourceKey = new ResourceKey(entry.Resource.TypeName, entry.Resource.Id);
-                    bundleResources.Add(resourceKey, entry.Resource);
+                    resourcesWithId.Add(resourceKey, entry.Resource);
                 }
             }
-            return bundleResources;
+            return new BundleResources(resourcesWithId, resourcesWithoutId);
         }
 
     }

@@ -10,7 +10,7 @@ namespace FhirDiff.Core.Tests
         private const string fileName = "Aaron697_Brekke496_2fa15bc7-8866-461a-9000-f739e425860a.json";
 
         [Fact]
-        public void GetBundleResources_CorrectlyExtractResourceKey()
+        public void GetBundleResources_ExtractResourceKey()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "TestData", fileName);
             var parser = new FhirJsonParser();
@@ -18,17 +18,19 @@ namespace FhirDiff.Core.Tests
 
             var bundle = parser.Parse<Bundle>(json);
             var matcher = new BundlesMatcher();
-            var keyDic = matcher.GetBundleResources(bundle);
+            var resourcesDic = matcher.GetBundleResources(bundle);
             var firstEntry = bundle.Entry.First();
             var expectedKey = new ResourceKey(firstEntry.Resource.TypeName, firstEntry.Resource.Id);
+            var resourcesCount = resourcesDic.ResourcesWithoutId.Count() + resourcesDic.ResourcesWithId.Count();
 
-            Assert.Equal(bundle.Entry.Count, keyDic.Count);
-            Assert.True(keyDic.ContainsKey(expectedKey));
-            Assert.Same(firstEntry.Resource, keyDic[expectedKey]);
+
+            Assert.Equal(bundle.Entry.Count, resourcesCount);
+            Assert.True(resourcesDic.ResourcesWithId.ContainsKey(expectedKey));
+            Assert.Same(firstEntry.Resource, resourcesDic.ResourcesWithId[expectedKey]);
         }
 
         [Fact]
-        public void GetBundleResources_ThroughsOnNullId()
+        public void GetBundleResources_ExtractResourceKeyWithNullId()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "TestData", fileNameWithNullID);
             var parser = new FhirJsonParser();
@@ -36,8 +38,17 @@ namespace FhirDiff.Core.Tests
 
             var bundle = parser.Parse<Bundle>(json);
             var matcher = new BundlesMatcher();
+            var resourcesDic = matcher.GetBundleResources(bundle);
 
-            Assert.Throws<InvalidOperationException>(() => matcher.GetBundleResources(bundle));
+            var entriesWithoutId = bundle.Entry.Where(e => e.Resource.Id == null).ToList();
+            var expectedWithoutIdCount = entriesWithoutId.Count;
+            var expectedWithIdCount = bundle.Entry.Count - expectedWithoutIdCount;
+
+            Assert.Equal(expectedWithoutIdCount, resourcesDic.ResourcesWithoutId.Count);
+            Assert.Equal(expectedWithIdCount, resourcesDic.ResourcesWithId.Count);
+
+            var firstEntryWithoutId = entriesWithoutId.First();
+            Assert.Contains(firstEntryWithoutId.Resource, resourcesDic.ResourcesWithoutId);
         }
     }
 }
