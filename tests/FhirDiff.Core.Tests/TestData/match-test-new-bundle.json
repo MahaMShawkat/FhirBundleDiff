@@ -1,0 +1,21 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-1",
+        "name": [{ "family": "Matched", "given": ["Sam"] }]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-added-1",
+        "status": "final",
+        "code": { "text": "Added-only observation" }
+      }
+    }
+  ]
+}
