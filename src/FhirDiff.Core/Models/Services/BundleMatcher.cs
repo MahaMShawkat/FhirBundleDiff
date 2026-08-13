@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FhirDiff.Core.Models
+namespace FhirDiff.Core.Models.Services
 {
     public class BundlesMatcher
     {
