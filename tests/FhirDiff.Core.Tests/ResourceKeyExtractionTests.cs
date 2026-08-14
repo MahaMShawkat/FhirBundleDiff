@@ -1,4 +1,5 @@
 ﻿using FhirDiff.Core.Models;
+using FhirDiff.Core.Services;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 
@@ -17,7 +18,7 @@ namespace FhirDiff.Core.Tests
             var json = File.ReadAllText(path);
 
             var bundle = parser.Parse<Bundle>(json);
-            var matcher = new BundleMatcher();
+            var matcher = new BundlesMatcher();
             var resourcesDic = matcher.GetBundleResources(bundle);
             var firstEntry = bundle.Entry.First();
             var expectedKey = new ResourceKey(firstEntry.Resource.TypeName, firstEntry.Resource.Id);
@@ -37,7 +38,7 @@ namespace FhirDiff.Core.Tests
             var json = File.ReadAllText(path);
 
             var bundle = parser.Parse<Bundle>(json);
-            var matcher = new BundleMatcher();
+            var matcher = new BundlesMatcher();
             var resourcesDic = matcher.GetBundleResources(bundle);
 
             var entriesWithoutId = bundle.Entry.Where(e => e.Resource.Id == null).ToList();
