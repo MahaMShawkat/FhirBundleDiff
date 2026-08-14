@@ -1,5 +1,5 @@
 using FhirDiff.Core.Models;
-using FhirDiff.Core.Models.Services;
+using FhirDiff.Core.Services;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using System.Linq;

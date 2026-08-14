@@ -1,9 +1,10 @@
-﻿using Hl7.Fhir.Model;
+﻿using FhirDiff.Core.Models;
+using Hl7.Fhir.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FhirDiff.Core.Models.Services
+namespace FhirDiff.Core.Services
 {
     public class BundlesMatcher
     {
