@@ -20,19 +20,7 @@ namespace FhirDiff.Core.Services
 
             foreach (var oldField in oldJson.EnumerateObject().Where(e => e.Name != ID_FIELD_NAME && e.Name != TYPE_FIELD_NAME))
             {
-                var path = oldField.Name;
-
-                if (newJson.TryGetProperty(oldField.Name, out var newValue))
-                {
-                    if (!oldField.Value.GetRawText().Equals(newValue.GetRawText()))
-                    {
-                        listFieldChanged.Add(new FieldDiff(path, oldField.Value, newValue));
-                    }
-                }
-                else
-                {
-                    listFieldChanged.Add(new FieldDiff(path, oldField.Value, null));
-                }
+                FindAllFieldsChanges(listFieldChanged, newJson, oldField, oldField.Name);
             }
 
             foreach (var newField in newJson.EnumerateObject().Where(e => e.Name != ID_FIELD_NAME && e.Name != TYPE_FIELD_NAME))
@@ -48,6 +36,48 @@ namespace FhirDiff.Core.Services
             var changeType = listFieldChanged.Any() ? ChangeType.Modified : ChangeType.Unchanged;
 
             return new ResourceChange(resource.Key.ResourceType, resource.Key.Id, changeType, listFieldChanged);
+        }
+
+        private void FindAllFieldsChanges(List<FieldDiff> listFieldChanged, JsonElement newJson, JsonProperty oldParentField, string path)
+        {
+            switch (oldParentField.Value.ValueKind)
+            {
+                case JsonValueKind.Object:
+                    {
+                        FindObjectFieldsChanges(listFieldChanged, newJson, oldParentField, path);
+                        break;
+                    }
+
+                default:
+                    {
+                        if (newJson.TryGetProperty(oldParentField.Name, out var newValue))
+                        {
+                            if (!oldParentField.Value.GetRawText().Equals(newValue.GetRawText()))
+                            {
+                                listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, newValue));
+                            }
+                        }
+                        else
+                        {
+                            listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, null));
+                        }
+                        break;
+                    }
+            }
+        }
+
+        private void FindObjectFieldsChanges(List<FieldDiff> listFieldChanged, JsonElement newJson, JsonProperty oldParentField, string path)
+        {
+            if (newJson.TryGetProperty(oldParentField.Name, out var newFieldValue))
+                foreach (var oldChildField in oldParentField.Value.EnumerateObject())
+                {
+                    var childPath = path + "." + oldChildField.Name;
+                    FindAllFieldsChanges(listFieldChanged, newFieldValue, oldChildField, childPath);
+                }
+            else
+            {
+                listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, null));
+            }
         }
     }
 }
