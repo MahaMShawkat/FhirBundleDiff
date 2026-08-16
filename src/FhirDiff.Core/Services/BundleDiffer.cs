@@ -48,6 +48,12 @@ namespace FhirDiff.Core.Services
                         break;
                     }
 
+                case JsonValueKind.Array:
+                    {
+                        FindArrayFieldsChanges(listFieldChanged, newJson, oldParentField, path);
+                        break;
+                    }
+
                 default:
                     {
                         if (newJson.TryGetProperty(oldParentField.Name, out var newValue))
@@ -76,6 +82,43 @@ namespace FhirDiff.Core.Services
                 }
             else
             {
+                listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, null));
+            }
+        }
+
+        private void FindArrayFieldsChanges(List<FieldDiff> listFieldChanged, JsonElement newJson, JsonProperty oldParentField, string path)
+        {
+            if (newJson.TryGetProperty(oldParentField.Name, out var newFieldValue))
+            {
+                // Mutable pool of new-side items; items are removed from here once matched -> no new item can be matched twice.
+                List<JsonElement> listNewFieldChildren = newFieldValue.EnumerateArray().ToList();
+
+                // Pass 1: for each old item, look for an exact (GetRawText) match in the new pool.
+                foreach (var oldArrayItem in oldParentField.Value.EnumerateArray())
+                {
+                    var match = listNewFieldChildren.FirstOrDefault(n => n.GetRawText().Equals(oldArrayItem.GetRawText()));
+
+                    if (match.ValueKind != JsonValueKind.Undefined)
+                    {
+                        // Exact match found -> unchanged item, not a diff -> Remove from pool so it can't be reused as a match for another old item.
+                        listNewFieldChildren.Remove(match);
+                    }
+                    else
+                    {
+                        // No match anywhere in new -> this old item was removed.
+                        listFieldChanged.Add(new FieldDiff(path, oldArrayItem, null));
+                    }
+                }
+
+                // Pass 2: whatever is left in the pool never matched an old item -> added.
+                foreach (var newChild in listNewFieldChildren)
+                {
+                    listFieldChanged.Add(new FieldDiff(path, null, newChild));
+                }
+            }
+            else
+            {
+                // The whole array field doesn't exist in new at all -> entire array removed as one unit.
                 listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, null));
             }
         }
