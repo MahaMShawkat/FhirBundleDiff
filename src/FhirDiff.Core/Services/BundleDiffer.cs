@@ -29,13 +29,42 @@ namespace FhirDiff.Core.Services
 
                 if (!oldJson.TryGetProperty(newField.Name, out _))
                 {
-                    listFieldChanged.Add(new FieldDiff(path, null, newField.Value));
+                    FindAddedFieldsChanges(listFieldChanged, newField.Value, path);
                 }
             }
 
             var changeType = listFieldChanged.Any() ? ChangeType.Modified : ChangeType.Unchanged;
 
             return new ResourceChange(resource.Key.ResourceType, resource.Key.Id, changeType, listFieldChanged);
+        }
+
+        private void FindAddedFieldsChanges(List<FieldDiff> listFieldChanged, JsonElement parentValue, string path)
+        {
+            switch (parentValue.ValueKind)
+            {
+                case JsonValueKind.Object:
+                    {
+                        foreach (var childField in parentValue.EnumerateObject())
+                        {
+                            FindAddedFieldsChanges(listFieldChanged, childField.Value, path + '.' + childField.Name);
+                        }
+                        break;
+                    }
+                case JsonValueKind.Array:
+                    {
+                        List<JsonElement> listChildrenField = parentValue.EnumerateArray().ToList();
+                        foreach (var childField in listChildrenField)
+                        {
+                            FindAddedFieldsChanges(listFieldChanged, childField, path);
+                        }
+                        break;
+                    }
+                default:
+                    {
+                        listFieldChanged.Add(new FieldDiff(path, null, parentValue));
+                        break;
+                    }
+            }
         }
 
         private void FindAllFieldsChanges(List<FieldDiff> listFieldChanged, JsonElement newJson, JsonProperty oldParentField, string path)
