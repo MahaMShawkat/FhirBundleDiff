@@ -10,7 +10,7 @@ namespace FhirDiff.Core.Services
         private const string ID_FIELD_NAME = "id";
         private const string TYPE_FIELD_NAME = "resourceType";
 
-        public ResourceChange BundleDiffProcess((ResourceKey Key, Resource Old, Resource New) resource)
+        public ResourceChange Diff((ResourceKey Key, Resource Old, Resource New) resource)
         {
             var listFieldChanged = new List<FieldDiff>();
             var serializer = new FhirJsonSerializer();
