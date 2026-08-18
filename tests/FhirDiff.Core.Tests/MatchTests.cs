@@ -9,16 +9,16 @@ namespace FhirDiff.Core.Tests;
 
 public class MatchTests
 {
-    private const string oldFileName = "match-test-old-bundle.json";
-    private const string newFileName = "match-test-new-bundle.json";
+    private const string OldFileName = "match-test-old-bundle.json";
+    private const string NewFileName = "match-test-new-bundle.json";
 
     [Fact]
     public void Match_MixedBundles_ClassifiesAddedRemovedAndMatchedCorrectly()
     {
         var parser = new FhirJsonParser();
         var matcher = new BundlesMatcher();
-        var oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", oldFileName);
-        var newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", newFileName);
+        var oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName);
+        var newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", NewFileName);
         var oldJson = File.ReadAllText(oldFilePath);
         var newJson = File.ReadAllText(newFilePath);
         var oldBundle = parser.Parse<Bundle>(oldJson);
