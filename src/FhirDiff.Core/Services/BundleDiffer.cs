@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace FhirDiff.Core.Services
 {
-    internal class BundleDiffer
+    public class BundleDiffer
     {
         private const string ID_FIELD_NAME = "id";
         private const string TYPE_FIELD_NAME = "resourceType";
