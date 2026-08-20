@@ -9,6 +9,8 @@ namespace FhirDiff.Core.Services
     {
         private const string IdFieldName = "id";
         private const string TypeFieldName = "resourceType";
+        private const string MetaVersionIdFieldName = "meta.versionId";
+        private const string MetaLastUpdatedFieldName = "meta.lastUpdated";
 
         public ResourceChange Diff((ResourceKey Key, Resource Old, Resource New) resource)
         {
@@ -61,7 +63,10 @@ namespace FhirDiff.Core.Services
                     }
                 default:
                     {
-                        listFieldChanged.Add(new FieldDiff(path, null, parentValue));
+                        if (path != MetaVersionIdFieldName && path != MetaLastUpdatedFieldName)
+                        {
+                            listFieldChanged.Add(new FieldDiff(path, null, parentValue));
+                        }
                         break;
                     }
             }
@@ -85,16 +90,19 @@ namespace FhirDiff.Core.Services
 
                 default:
                     {
-                        if (newJson.TryGetProperty(oldParentField.Name, out var newValue))
+                        if (path != MetaVersionIdFieldName && path != MetaLastUpdatedFieldName)
                         {
-                            if (!oldParentField.Value.GetRawText().Equals(newValue.GetRawText()))
+                            if (newJson.TryGetProperty(oldParentField.Name, out var newValue))
                             {
-                                listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, newValue));
+                                if (!oldParentField.Value.GetRawText().Equals(newValue.GetRawText()))
+                                {
+                                    listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, newValue));
+                                }
                             }
-                        }
-                        else
-                        {
-                            listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, null));
+                            else
+                            {
+                                listFieldChanged.Add(new FieldDiff(path, oldParentField.Value, null));
+                            }
                         }
                         break;
                     }
