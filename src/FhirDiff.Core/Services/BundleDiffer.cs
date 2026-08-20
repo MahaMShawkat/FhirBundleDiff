@@ -7,8 +7,8 @@ namespace FhirDiff.Core.Services
 {
     public class BundleDiffer
     {
-        private const string ID_FIELD_NAME = "id";
-        private const string TYPE_FIELD_NAME = "resourceType";
+        private const string IdFieldName = "id";
+        private const string TypeFieldName = "resourceType";
 
         public ResourceChange Diff((ResourceKey Key, Resource Old, Resource New) resource)
         {
@@ -18,12 +18,12 @@ namespace FhirDiff.Core.Services
             var oldJson = JsonDocument.Parse(serializer.SerializeToString(resource.Old)).RootElement;
             var newJson = JsonDocument.Parse(serializer.SerializeToString(resource.New)).RootElement;
 
-            foreach (var oldField in oldJson.EnumerateObject().Where(e => e.Name != ID_FIELD_NAME && e.Name != TYPE_FIELD_NAME))
+            foreach (var oldField in oldJson.EnumerateObject().Where(e => e.Name != IdFieldName && e.Name != TypeFieldName))
             {
                 FindAllFieldsChanges(listFieldChanged, newJson, oldField, oldField.Name);
             }
 
-            foreach (var newField in newJson.EnumerateObject().Where(e => e.Name != ID_FIELD_NAME && e.Name != TYPE_FIELD_NAME))
+            foreach (var newField in newJson.EnumerateObject().Where(e => e.Name != IdFieldName && e.Name != TypeFieldName))
             {
                 var path = newField.Name;
 
