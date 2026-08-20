@@ -23,8 +23,11 @@ public class DiffTests
         var oldBundle = parser.Parse<Bundle>(oldJson);
         var newBundle = parser.Parse<Bundle>(newJson);
 
-        var diff = differ.Diff((new ResourceKey("Patient", "patient-1"), oldBundle.Entry[0].Resource, newBundle.Entry[0].Resource));
+        var diff = differ.Diff((new ResourceKey("Patient", "patient-1"), oldBundle.Entry[1].Resource, newBundle.Entry[1].Resource));
         var changes = diff.FieldChanges;
+
+        var diffPatient2 = differ.Diff((new ResourceKey("Patient", "patient-2"), oldBundle.Entry[0].Resource, newBundle.Entry[0].Resource));
+        var changesPatient2 = diffPatient2.FieldChanges;
 
         var expectedGenderOld = JsonDocument.Parse("\"female\"").RootElement;
         var expectedGenderNew = JsonDocument.Parse("\"male\"").RootElement;
@@ -105,5 +108,18 @@ public class DiffTests
             f.FieldPath == "address.country" &&
             f.OldValue == null &&
             f.NewValue.Value.GetRawText() == expectedNewCountry.GetRawText());
+
+        var expectedPatient2ProfileItem = JsonDocument.Parse("\"http://hl7.org/fhir/StructureDefinition/Patient\"").RootElement;
+
+        // Assert
+        Assert.Contains(changesPatient2, f =>
+            f.FieldPath == "meta.profile" &&
+            f.OldValue == null &&
+            f.NewValue.Value.GetRawText() == expectedPatient2ProfileItem.GetRawText()
+            );
+        Assert.DoesNotContain(changesPatient2, f =>
+            f.FieldPath == "meta.versionId");
+        Assert.DoesNotContain(changesPatient2, f =>
+            f.FieldPath == "meta.lastUpdated");
     }
 }

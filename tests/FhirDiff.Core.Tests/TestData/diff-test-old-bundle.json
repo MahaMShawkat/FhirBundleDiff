@@ -3,6 +3,14 @@
   "type": "collection",
   "entry": [
     {
+
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-2",
+        "active": true
+      }
+    },
+    {
       "resource": {
         "resourceType": "Patient",
         "id": "patient-1",
@@ -20,7 +28,7 @@
         "name": [
           {
             "family": "Test",
-            "given": ["Old"]
+            "given": [ "Old" ]
           }
         ],
         "telecom": [
