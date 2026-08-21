@@ -40,7 +40,7 @@ namespace FhirDiff.Core.Services
             return new ResourceChange(resource.Key.ResourceType, resource.Key.Id, changeType, listFieldChanged);
         }
 
-        private void FindAddedFieldsChanges(List<FieldDiff> listFieldChanged, JsonElement parentValue, string path)
+        public void FindAddedFieldsChanges(List<FieldDiff> listFieldChanged, JsonElement parentValue, string path)
         {
             switch (parentValue.ValueKind)
             {
