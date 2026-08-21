@@ -29,10 +29,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="TestData\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Update="TestData\Aaron697_Brekke496_2fa15bc7-8866-461a-9000-f739e425860a.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
