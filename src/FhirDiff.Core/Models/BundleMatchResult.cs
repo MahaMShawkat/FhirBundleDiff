@@ -6,7 +6,7 @@ using System.Text;
 namespace FhirDiff.Core.Models
 {
     public record BundleMatchResult(
-    IReadOnlyList<ResourceKey> Added,
-    IReadOnlyList<ResourceKey> Removed,
+    IReadOnlyList<(ResourceKey key, Resource resource)> Added,
+    IReadOnlyList<(ResourceKey key, Resource resource)> Removed,
     IReadOnlyList<(ResourceKey Key, Resource Old, Resource New)> Matched);
 }
