@@ -5,7 +5,8 @@
         Added,
         Removed,
         Modified,
-        Unchanged
+        Unchanged,
+        NoId
     }
 
     public class ResourceChange
