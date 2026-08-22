@@ -36,6 +36,7 @@ public class MatchTests
 
         Assert.Same(oldBundle.Entry[0].Resource, matchedPair.Old);
         Assert.Same(newBundle.Entry[0].Resource, matchedPair.New);
+        Assert.Contains(matchResults.OldResourcesWithoutId, r => r.Id == null);
         Assert.Equal(1, matchResults.Added.Count);
         Assert.Equal(1, matchResults.Removed.Count);
         Assert.Equal(1, matchResults.Matched.Count);
