@@ -24,14 +24,16 @@ public class MatchTests
         var oldBundle = parser.Parse<Bundle>(oldJson);
         var newBundle = parser.Parse<Bundle>(newJson);
 
-        var matchResults = matcher.Match(oldBundle, newBundle);
+        var matchResults = matcher.Match(oldBundle, newBundle);        
         var expectedRemovedKey = new ResourceKey("Observation", "obs-removed-1");
         var expectedAddedKey = new ResourceKey("Observation", "obs-added-1");
         var expectedMatchedKey = new ResourceKey("Patient", "patient-1");
 
-        Assert.Contains(expectedAddedKey, matchResults.Added);
-        Assert.Contains(expectedRemovedKey, matchResults.Removed);
+        Assert.Contains(matchResults.Added, a => a.key == expectedAddedKey);
+        Assert.Contains(matchResults.Removed, r => r.key == expectedRemovedKey);
+
         var matchedPair = matchResults.Matched.Single(m => m.Key == expectedMatchedKey);
+
         Assert.Same(oldBundle.Entry[0].Resource, matchedPair.Old);
         Assert.Same(newBundle.Entry[0].Resource, matchedPair.New);
         Assert.Equal(1, matchResults.Added.Count);

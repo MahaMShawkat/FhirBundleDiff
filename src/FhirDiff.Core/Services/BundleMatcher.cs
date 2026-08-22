@@ -30,8 +30,8 @@ namespace FhirDiff.Core.Services
 
         public BundleMatchResult Match(Bundle oldBundle, Bundle newBundle)
         {
-            List<ResourceKey> listAddedResources = new List<ResourceKey>();
-            List<ResourceKey> listRemovedResources = new List<ResourceKey>();
+            List<(ResourceKey key, Resource resource)> listAddedResources = new List<(ResourceKey key, Resource resource)>();
+            List<(ResourceKey key, Resource resource)> listRemovedResources = new List<(ResourceKey key, Resource resource)>();
             List<(ResourceKey Key, Resource Old, Resource New)> listMatchedResources = new List<(ResourceKey Key, Resource Old, Resource New)>();
 
             IReadOnlyDictionary<ResourceKey, Resource> oldResourcesWithIdList = GetBundleResources(oldBundle).ResourcesWithId;
@@ -41,7 +41,7 @@ namespace FhirDiff.Core.Services
             {
                 ResourceKey key = oldResource.Key;
                 if (!newResourcesWithIdList.ContainsKey(key))
-                    listRemovedResources.Add(key);
+                    listRemovedResources.Add((key,oldResource.Value));
                 else
                     listMatchedResources.Add((key, oldResource.Value, newResourcesWithIdList[key]));
             }
@@ -50,7 +50,7 @@ namespace FhirDiff.Core.Services
             {
                 ResourceKey key = newResource.Key;
                 if (!oldResourcesWithIdList.ContainsKey(key))
-                    listAddedResources.Add(key);
+                    listAddedResources.Add((key,newResource.Value));
             }
 
             return new BundleMatchResult(listAddedResources, listRemovedResources, listMatchedResources);
