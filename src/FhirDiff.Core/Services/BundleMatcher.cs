@@ -34,26 +34,26 @@ namespace FhirDiff.Core.Services
             List<(ResourceKey key, Resource resource)> listRemovedResources = new List<(ResourceKey key, Resource resource)>();
             List<(ResourceKey Key, Resource Old, Resource New)> listMatchedResources = new List<(ResourceKey Key, Resource Old, Resource New)>();
 
-            IReadOnlyDictionary<ResourceKey, Resource> oldResourcesWithIdList = GetBundleResources(oldBundle).ResourcesWithId;
-            IReadOnlyDictionary<ResourceKey, Resource> newResourcesWithIdList = GetBundleResources(newBundle).ResourcesWithId;
+            var oldResourcesList = GetBundleResources(oldBundle);
+            var newResourcesList = GetBundleResources(newBundle);
 
-            foreach (var oldResource in oldResourcesWithIdList)
+            foreach (var oldResource in oldResourcesList.ResourcesWithId)
             {
                 ResourceKey key = oldResource.Key;
-                if (!newResourcesWithIdList.ContainsKey(key))
-                    listRemovedResources.Add((key,oldResource.Value));
+                if (!newResourcesList.ResourcesWithId.ContainsKey(key))
+                    listRemovedResources.Add((key, oldResource.Value));
                 else
-                    listMatchedResources.Add((key, oldResource.Value, newResourcesWithIdList[key]));
+                    listMatchedResources.Add((key, oldResource.Value, newResourcesList.ResourcesWithId[key]));
             }
 
-            foreach (var newResource in newResourcesWithIdList)
+            foreach (var newResource in newResourcesList.ResourcesWithId)
             {
                 ResourceKey key = newResource.Key;
-                if (!oldResourcesWithIdList.ContainsKey(key))
-                    listAddedResources.Add((key,newResource.Value));
+                if (!oldResourcesList.ResourcesWithId.ContainsKey(key))
+                    listAddedResources.Add((key, newResource.Value));
             }
 
-            return new BundleMatchResult(listAddedResources, listRemovedResources, listMatchedResources);
+            return new BundleMatchResult(listAddedResources, listRemovedResources, listMatchedResources, oldResourcesList.ResourcesWithoutId, newResourcesList.ResourcesWithoutId);
         }
     }
 }
