@@ -44,12 +44,12 @@ namespace FhirDiff.Core.Services
 
             foreach (var newNonIdResource in matchResults.NewResourcesWithoutId) //non-id to be inserted as is. no diff to be called there. AddedCount increased by one
             {
-                resourceChanges.Add(new ResourceChange(newNonIdResource.TypeName, null, ChangeType.NoId, null));
+                resourceChanges.Add(new ResourceChange(newNonIdResource.TypeName, null, ChangeType.NoId, new List<FieldDiff>()));
             }
 
             foreach (var oldNonIdResource in matchResults.OldResourcesWithoutId) //non-id to be inserted as is. no diff to be called there. AddedCount increased by one
             {
-                resourceChanges.Add(new ResourceChange(oldNonIdResource.TypeName, null, ChangeType.NoId, null));
+                resourceChanges.Add(new ResourceChange(oldNonIdResource.TypeName, null, ChangeType.NoId, new List<FieldDiff>()));
             }
 
             foreach (var matchedResource in matchResults.Matched)
