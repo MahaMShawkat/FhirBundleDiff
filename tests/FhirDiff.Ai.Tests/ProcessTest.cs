@@ -1,5 +1,6 @@
 ﻿using FhirDiff.Core.Models;
 using FhirDiff.Core.Services;
+using FhirDiff.Ai.Services;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using System.Text.Json;

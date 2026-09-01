@@ -1,5 +1,5 @@
-﻿using FhirDiff.Ai;
-using FhirDiff.Core.Models;
+﻿using FhirDiff.Core.Models;
+using FhirDiff.Core.Services;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using System;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 
-namespace FhirDiff.Core.Services
+namespace FhirDiff.Ai.Services
 {
     public class BundleDiffProcessor
     {
