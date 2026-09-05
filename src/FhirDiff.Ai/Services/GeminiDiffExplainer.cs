@@ -1,11 +1,24 @@
 ﻿using FhirDiff.Ai.Models;
 using FhirDiff.Core.Models;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace FhirDiff.Ai.Services
 {
     public class GeminiDiffExplainer : IDiffExplainer
     {
+        private static readonly string JsonContentPart = "{{\"contents\":[{{\"parts\":[{{\"text\": {0} }}]}}]";
+        private static readonly string JsonGenerationConfigPart = ",\"generationConfig\": {{\"responseMimeType\": \"application/json\", \"responseSchema\": {0}}}}}";
+        private static readonly string Config = "{\"type\": \"ARRAY\"," +
+                                                "\"items\": {" +
+                                                "\"type\": \"OBJECT\"," +
+                                                "\"properties\": {" +
+                                                "\"resourceType\": { \"type\": \"STRING\" }," +
+                                                "\"resourceId\": { \"type\": \"STRING\" }," +
+                                                "\"explanation\": { \"type\": \"STRING\" }}," +
+                                                "\"required\": [\"resourceType\", \"resourceId\", \"explanation\"]" +
+                                                "}}";
+
         // Orchestrator — splits, delegates, merges
         public async Task<List<ResourceChangeExplanation>> DescribeResourceChanges(IReadOnlyList<ResourceChange> resourceChanges)
         {
@@ -47,18 +60,34 @@ namespace FhirDiff.Ai.Services
                         listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource has no Id. Matching is Inapplicable"));
                         break;
                     default:
-                        throw new ArgumentException($"Unexpected ChangeType '{resourceChange.ChangeType}' in non-Matched resources.");                       
+                        throw new ArgumentException($"Unexpected ChangeType '{resourceChange.ChangeType}' in non-Matched resources.");
                 }
             }
             return listResourcesWithExplanation;
         }
-        
+
         private string BuildGeminiRequestJson(IReadOnlyList<ResourceChange> matchedChanges)
         {
-            // To be implemented: Matched → prompt JSON (per Log#18 shape: field hints, schema)
-            return null;
+            string resourceDataJson = JsonSerializer.Serialize(matchedChanges);
+            var promptWithResources = "You are assisting a healthcare software developer or QA tester validating changes between two versions of FHIR resources. " +
+                "You will be given a list of resource changes, each with field-level differences." +
+                " For each resource, assess whether its changes are likely meaningful/risky to downstream systems or likely benign — do not just restate the changes." +
+                "\r\n\r\nTreat changes to identifier, gender, birthDate, and deceased fields as generally high-impact. " +
+                "Treat telecom, address, and text as generally benign. Treat maritalStatus and name as context-dependent — judge based on actual values changed." +
+                "\r\n\r\nKeep explanations free of padding, examples, filler, intros/closings, exclamation points, hedging. Here are the resource changes: \r\n\r\n" +
+                resourceDataJson;
+            string escaped = JsonSerializer.Serialize(promptWithResources);
+            string content = string.Format(JsonContentPart, escaped);
+
+            return AmendGenerationConfigJson(content);
         }
-       
+
+        private string AmendGenerationConfigJson(string contentJson)
+        {
+            string config = string.Format(JsonGenerationConfigPart, Config);
+            return contentJson + config;
+        }
+
         private async Task<List<ResourceChangeExplanation>> CallGeminiApi(string requestJson)
         {
             // To be implemented: HTTP call — sends prompt JSON, parses Gemini response
