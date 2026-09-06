@@ -1,6 +1,6 @@
 ﻿using FhirDiff.Ai.Models;
 using FhirDiff.Core.Models;
-using System.Threading.Tasks;
+using System.Text;
 using System.Text.Json;
 
 namespace FhirDiff.Ai.Services
@@ -18,13 +18,24 @@ namespace FhirDiff.Ai.Services
                                                 "\"explanation\": { \"type\": \"STRING\" }}," +
                                                 "\"required\": [\"resourceType\", \"resourceId\", \"explanation\"]" +
                                                 "}}";
+        private static readonly string Url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+        private static readonly HttpClient _httpClient = new HttpClient();
+
+        private readonly string _apiKey;
+
+        public GeminiDiffExplainer(string apiKey)
+        {
+            _apiKey = apiKey;
+            _httpClient.DefaultRequestHeaders.Add("x-goog-api-key", _apiKey);
+        }
 
         // Orchestrator — splits, delegates, merges
         public async Task<List<ResourceChangeExplanation>> DescribeResourceChanges(IReadOnlyList<ResourceChange> resourceChanges)
         {
             var listResourceChangeExplanation = BuildHardcodedExplanations(GetNonMatchedResources(resourceChanges));
             var geminiRequestJson = BuildGeminiRequestJson(GetMatchedResources(resourceChanges));
-            var listAiExplanation = await CallGeminiApi(geminiRequestJson);
+            var LlmResponse = await CallLlmApi(geminiRequestJson);
+            List<ResourceChangeExplanation> listAiExplanation = await ParseLlmResponse(LlmResponse);
             listResourceChangeExplanation.AddRange(listAiExplanation);
 
             return listResourceChangeExplanation;
@@ -88,10 +99,23 @@ namespace FhirDiff.Ai.Services
             return contentJson + config;
         }
 
-        private async Task<List<ResourceChangeExplanation>> CallGeminiApi(string requestJson)
+        private async Task<string> CallLlmApi(string requestJson)
         {
-            // To be implemented: HTTP call — sends prompt JSON, parses Gemini response
-            return null;
+            StringContent content = new StringContent(requestJson, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync(Url, content);
+            response.EnsureSuccessStatusCode();
+            string result = await response.Content.ReadAsStringAsync();
+            
+            return result;
+        }
+
+        private async Task<List<ResourceChangeExplanation>> ParseLlmResponse(string responseText)
+        {
+            JsonElement jsonResponse = JsonDocument.Parse(responseText).RootElement;
+            string? textJson = jsonResponse.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
+            List<ResourceChangeExplanation> explanations = JsonSerializer.Deserialize<List<ResourceChangeExplanation>>(textJson);
+           
+            return explanations;
         }
     }
 }
