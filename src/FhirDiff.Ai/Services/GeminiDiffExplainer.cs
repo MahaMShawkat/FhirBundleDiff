@@ -2,6 +2,7 @@
 using FhirDiff.Core.Models;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace FhirDiff.Ai.Services
 {
@@ -103,9 +104,33 @@ namespace FhirDiff.Ai.Services
         {
             StringContent content = new StringContent(requestJson, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _httpClient.PostAsync(Url, content);
-            response.EnsureSuccessStatusCode();
-            string result = await response.Content.ReadAsStringAsync();
-            
+
+            return await ExtractResultsFromContents(response);
+        }
+
+        private static async Task<string> ExtractResultsFromContents(HttpResponseMessage response)
+        {
+            string result = string.Empty;
+
+            switch (response.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    {
+                        result = await response.Content.ReadAsStringAsync();
+                        break;
+                    }
+                case System.Net.HttpStatusCode.TooManyRequests:
+                    {
+                        result = "Too many requests. Try again later";
+                        break;
+                    }
+                default:
+                    {
+                        response.EnsureSuccessStatusCode();
+                        break;
+                    }
+            }
+
             return result;
         }
 
@@ -114,7 +139,7 @@ namespace FhirDiff.Ai.Services
             JsonElement jsonResponse = JsonDocument.Parse(responseText).RootElement;
             string? textJson = jsonResponse.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
             List<ResourceChangeExplanation> explanations = JsonSerializer.Deserialize<List<ResourceChangeExplanation>>(textJson);
-           
+
             return explanations;
         }
     }
