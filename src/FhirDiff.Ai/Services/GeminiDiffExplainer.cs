@@ -20,12 +20,12 @@ namespace FhirDiff.Ai.Services
                                                 "\"required\": [\"resourceType\", \"resourceId\", \"explanation\"]" +
                                                 "}}";
         private static readonly string Url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-        private static readonly HttpClient _httpClient = new HttpClient();
-
+        private HttpClient _httpClient;
         private readonly string _apiKey;
 
-        public GeminiDiffExplainer(string apiKey)
+        public GeminiDiffExplainer(string apiKey, HttpClient? httpClient = null)
         {
+            _httpClient = httpClient ?? new HttpClient();
             _apiKey = apiKey;
             _httpClient.DefaultRequestHeaders.Add("x-goog-api-key", _apiKey);
         }
