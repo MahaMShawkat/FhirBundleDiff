@@ -69,10 +69,10 @@ namespace FhirDiff.Ai.Services
                         listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource is removed"));
                         break;
                     case ChangeType.NoId:
-                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource has no Id. Matching is Inapplicable"));
+                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource has no Id. Matching is inapplicable"));
                         break;
                     default:
-                        throw new ArgumentException($"Unexpected ChangeType '{resourceChange.ChangeType}' in non-Matched resources.");
+                        throw new ArgumentException($"Unexpected changeType '{resourceChange.ChangeType}' in non-matched resources.");
                 }
             }
             return listResourcesWithExplanation;
@@ -84,9 +84,9 @@ namespace FhirDiff.Ai.Services
             var promptWithResources = "You are assisting a healthcare software developer or QA tester validating changes between two versions of FHIR resources. " +
                 "You will be given a list of resource changes, each with field-level differences." +
                 " For each resource, assess whether its changes are likely meaningful/risky to downstream systems or likely benign — do not just restate the changes." +
-                "\r\n\r\nTreat changes to identifier, gender, birthDate, and deceased fields as generally high-impact. " +
+                "\nTreat changes to identifier, gender, birthDate, and deceased fields as generally high-impact. " +
                 "Treat telecom, address, and text as generally benign. Treat maritalStatus and name as context-dependent — judge based on actual values changed." +
-                "\r\n\r\nKeep explanations free of padding, examples, filler, intros/closings, exclamation points, hedging. Here are the resource changes: \r\n\r\n" +
+                "\nKeep explanations free of padding, examples, filler, intros/closings, exclamation points, hedging. Here are the resource changes: \n" +
                 resourceDataJson;
             string escaped = JsonSerializer.Serialize(promptWithResources);
             string content = string.Format(JsonContentPart, escaped);
