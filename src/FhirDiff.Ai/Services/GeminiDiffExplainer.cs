@@ -54,7 +54,7 @@ namespace FhirDiff.Ai.Services
         }
 
         // Non-Matched (Added/Removed/NoId) → hardcoded template explanations
-        private List<ResourceChangeExplanation> BuildHardcodedExplanations(IReadOnlyList<ResourceChange> nonMatchedChanges)
+        public List<ResourceChangeExplanation> BuildHardcodedExplanations(IReadOnlyList<ResourceChange> nonMatchedChanges)
         {
             var listResourcesWithExplanation = new List<ResourceChangeExplanation>();
 
@@ -134,7 +134,7 @@ namespace FhirDiff.Ai.Services
             return result;
         }
 
-        private async Task<List<ResourceChangeExplanation>> ParseLlmResponse(string responseText)
+        public async Task<List<ResourceChangeExplanation>> ParseLlmResponse(string responseText)
         {
             JsonElement jsonResponse = JsonDocument.Parse(responseText).RootElement;
             string? textJson = jsonResponse.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
