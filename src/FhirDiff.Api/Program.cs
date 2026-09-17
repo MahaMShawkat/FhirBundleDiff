@@ -1,4 +1,18 @@
+using FhirDiff.Core.Services;
+using FhirDiff.Ai.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IDiffExplainer>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var apiKey = config["Gemini:ApiKey"] ?? throw new InvalidOperationException("Missing configuration: Gemini:ApiKey");
+    return new GeminiDiffExplainer(apiKey);
+});
+
+builder.Services.AddScoped<BundlesMatcher>();
+builder.Services.AddScoped<BundleDiffer>();
+builder.Services.AddScoped<BundleDiffProcessor>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
