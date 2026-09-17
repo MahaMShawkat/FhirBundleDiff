@@ -1,7 +1,7 @@
 ﻿using FhirDiff.Core.Models;
 using FhirDiff.Core.Services;
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
+using FhirDiff.Core.Tests.CoreTestHelpers;
+
 using System.Text.Json;
 
 namespace FhirDiff.Core.Tests;
@@ -14,14 +14,9 @@ public class DiffTests
     [Fact]
     public void Diff_MixedBundles_DetectsAddedRemovedModifiedAndUnchangedCorrectly()
     {
-        var parser = new FhirJsonParser();
+        var oldBundle = BundlesFetcher.GetBundleFromFile(OldFileName);
+        var newBundle = BundlesFetcher.GetBundleFromFile(NewFileName);
         var differ = new BundleDiffer();
-        var oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName);
-        var newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", NewFileName);
-        var oldJson = File.ReadAllText(oldFilePath);
-        var newJson = File.ReadAllText(newFilePath);
-        var oldBundle = parser.Parse<Bundle>(oldJson);
-        var newBundle = parser.Parse<Bundle>(newJson);
 
         var diff = differ.Diff((new ResourceKey("Patient", "patient-1"), oldBundle.Entry[1].Resource, newBundle.Entry[1].Resource));
         var changes = diff.FieldChanges;

@@ -1,8 +1,7 @@
 using FhirDiff.Core.Models;
 using FhirDiff.Core.Services;
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
-using System.Linq;
+using FhirDiff.Core.Tests.CoreTestHelpers;
+
 
 namespace FhirDiff.Core.Tests;
 
@@ -15,14 +14,9 @@ public class MatchTests
     [Fact]
     public void Match_MixedBundles_ClassifiesAddedRemovedAndMatchedCorrectly()
     {
-        var parser = new FhirJsonParser();
+        var oldBundle = BundlesFetcher.GetBundleFromFile(OldFileName);
+        var newBundle = BundlesFetcher.GetBundleFromFile(NewFileName);
         var matcher = new BundlesMatcher();
-        var oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName);
-        var newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", NewFileName);
-        var oldJson = File.ReadAllText(oldFilePath);
-        var newJson = File.ReadAllText(newFilePath);
-        var oldBundle = parser.Parse<Bundle>(oldJson);
-        var newBundle = parser.Parse<Bundle>(newJson);
 
         var matchResults = matcher.Match(oldBundle, newBundle);        
         var expectedRemovedKey = new ResourceKey("Observation", "obs-removed-1");
