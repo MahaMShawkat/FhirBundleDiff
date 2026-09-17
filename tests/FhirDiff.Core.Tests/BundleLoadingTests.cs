@@ -1,4 +1,5 @@
-﻿using Hl7.Fhir.Model;
+﻿using FhirDiff.Core.Tests.CoreTestHelpers;
+using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 
 namespace FhirDiff.Core.Tests
@@ -10,11 +11,7 @@ namespace FhirDiff.Core.Tests
         [Fact]
         public void LoadBundle_ParsesSuccessfully()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "TestData", fileName);
-            var parser = new FhirJsonParser();
-            var json = File.ReadAllText(path);
-
-            var bundle = parser.Parse<Bundle>(json);
+            Bundle bundle = BundlesFetcher.GetBundleFromFile(fileName);
 
             Assert.NotNull(bundle);
             Assert.True(bundle.Entry.Count > 0);

@@ -1,5 +1,6 @@
 ﻿using FhirDiff.Core.Models;
 using FhirDiff.Core.Services;
+using FhirDiff.Core.Tests.CoreTestHelpers;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 
@@ -13,12 +14,9 @@ namespace FhirDiff.Core.Tests
         [Fact]
         public void GetBundleResources_ExtractResourceKey()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "TestData", fileName);
-            var parser = new FhirJsonParser();
-            var json = File.ReadAllText(path);
-
-            var bundle = parser.Parse<Bundle>(json);
+            var bundle = BundlesFetcher.GetBundleFromFile(fileName);
             var matcher = new BundlesMatcher();
+
             var resourcesDic = matcher.GetBundleResources(bundle);
             var firstEntry = bundle.Entry.First();
             var expectedKey = new ResourceKey(firstEntry.Resource.TypeName, firstEntry.Resource.Id);
