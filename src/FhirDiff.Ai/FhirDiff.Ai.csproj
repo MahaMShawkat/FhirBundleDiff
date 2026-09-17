@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FhirDiff.Api\FhirDiff.Api.csproj" />
     <ProjectReference Include="..\FhirDiff.Core\FhirDiff.Core.csproj" />
   </ItemGroup>
 
