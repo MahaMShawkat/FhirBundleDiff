@@ -27,6 +27,12 @@
 		<Using Include="Xunit" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Update="TestData\Aaron697_Brekke496_2fa15bc7-8866-461a-9000-f739e425860a.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="TestData\Aaron697_Stiedemann542_41166989-975d-4d17-b9de-17f94cb3eec1.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="TestData\process-test-old-bundle.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
