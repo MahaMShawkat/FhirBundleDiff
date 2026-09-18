@@ -1,8 +1,10 @@
 ﻿using FhirDiff.Ai.Services;
 using FhirDiff.Ai.Tests.AiTestHelpers;
+using FhirDiff.Core.Models;
 using FhirDiff.Core.Services;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
+using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Text.Json;
 
@@ -55,4 +57,35 @@ public class EndToEndTest
         // Assert
         Assert.NotNull(resourceChanges);
     }
+
+
+    [Trait("Category", "Integration")]
+    [Fact]
+    public void Process_RealApiCall_CompletesWithoutError()
+    {
+        // Arrange — load real bundles
+        string oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName + ".json");
+        string oldJson = File.ReadAllText(oldFilePath);
+        Bundle? oldBundle = JsonSerializer.Deserialize<Bundle>(oldJson, _fhirJsonOptions);
+
+        string newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", NewFileName + ".json");
+        string newJson = File.ReadAllText(newFilePath);
+        Bundle? newBundle = JsonSerializer.Deserialize<Bundle>(newJson, _fhirJsonOptions);
+
+        //Arrange - Explainer with real apiKey
+        var config = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json", optional: false).Build();
+        string apiKey = config["Gemini:ApiKey"] ?? throw new InvalidOperationException("Missing Gemini:ApiKey");
+        GeminiDiffExplainer explainer = new GeminiDiffExplainer(apiKey);
+        var matcher = new BundlesMatcher();
+        var differ = new BundleDiffer();
+        var processor = new BundleDiffProcessor(matcher, differ, explainer);
+
+        // Act
+        var resourceChanges = processor.Process(oldBundle!, newBundle!);
+
+        // Assert
+        Console.WriteLine(resourceChanges.Changes.Count(c => c.ChangeType == Core.Models.ChangeType.Modified || c.ChangeType == ChangeType.Unchanged));
+        Assert.NotNull(resourceChanges);
+    }
+    
 }
