@@ -139,7 +139,8 @@ namespace FhirDiff.Ai.Services
         {
             JsonElement jsonResponse = JsonDocument.Parse(responseText).RootElement;
             string? textJson = jsonResponse.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
-            List<ResourceChangeExplanation> explanations = JsonSerializer.Deserialize<List<ResourceChangeExplanation>>(textJson);
+            JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            List<ResourceChangeExplanation> explanations = JsonSerializer.Deserialize<List<ResourceChangeExplanation>>(textJson, options);
 
             return explanations;
         }
