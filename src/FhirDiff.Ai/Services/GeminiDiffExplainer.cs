@@ -19,7 +19,8 @@ namespace FhirDiff.Ai.Services
                                                 "\"explanation\": { \"type\": \"STRING\" }}," +
                                                 "\"required\": [\"resourceType\", \"resourceId\", \"explanation\"]" +
                                                 "}}";
-        private static readonly string Url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+        private const string ModelName = "gemini-3.6-flash";
+        private static readonly string Url = $"https://generativelanguage.googleapis.com/v1beta/models/{ModelName}:generateContent";
         private HttpClient _httpClient;
         private readonly string _apiKey;
 
