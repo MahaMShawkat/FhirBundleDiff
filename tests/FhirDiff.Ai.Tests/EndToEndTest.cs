@@ -7,6 +7,7 @@ using Hl7.Fhir.Serialization;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Text.Json;
+using Task = System.Threading.Tasks.Task;
 
 namespace FhirDiff.Ai.Tests;
 
@@ -17,7 +18,7 @@ public class EndToEndTest
     private static readonly JsonSerializerOptions _fhirJsonOptions = new JsonSerializerOptions().ForFhir(ModelInfo.ModelInspector);
 
     [Fact]
-    public void Process_RealSyntheaBundles_CompletesWithoutError()
+    public async Task Process_RealSyntheaBundles_CompletesWithoutError()
     {
         // Arrange — load real bundles
         string oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName + ".json");
@@ -52,7 +53,7 @@ public class EndToEndTest
         var processor = new BundleDiffProcessor(matcher, differ, explainer);
 
         // Act
-        var resourceChanges = processor.Process(oldBundle!, newBundle!);
+        var resourceChanges = await processor.Process(oldBundle!, newBundle!);
 
         // Assert
         Assert.NotNull(resourceChanges);
@@ -61,7 +62,7 @@ public class EndToEndTest
 
     [Trait("Category", "Integration")]
     [Fact]
-    public void Process_RealApiCall_CompletesWithoutError()
+    public async Task Process_RealApiCall_CompletesWithoutError()
     {
         // Arrange — load real bundles
         string oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName + ".json");
@@ -81,7 +82,7 @@ public class EndToEndTest
         var processor = new BundleDiffProcessor(matcher, differ, explainer);
 
         // Act
-        var resourceChanges = processor.Process(oldBundle!, newBundle!);
+        var resourceChanges = await processor.Process(oldBundle!, newBundle!);
 
         // Assert
         Assert.NotNull(resourceChanges);
