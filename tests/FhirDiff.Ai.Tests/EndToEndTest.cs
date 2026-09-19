@@ -84,7 +84,6 @@ public class EndToEndTest
         var resourceChanges = processor.Process(oldBundle!, newBundle!);
 
         // Assert
-        Console.WriteLine(resourceChanges.Changes.Count(c => c.ChangeType == Core.Models.ChangeType.Modified || c.ChangeType == ChangeType.Unchanged));
         Assert.NotNull(resourceChanges);
     }
     
