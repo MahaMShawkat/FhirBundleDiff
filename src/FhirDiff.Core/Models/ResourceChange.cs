@@ -25,6 +25,7 @@
         public string ResourceId { get; set; }
         public ChangeType ChangeType { get; set; }
         public List<FieldDiff> FieldChanges { get; set; }  // empty for Unchanged; single "" entry for Added/Removed; multiple for Modified
+        public string ChangeExplanation { get; set; }
     }
 
 }
