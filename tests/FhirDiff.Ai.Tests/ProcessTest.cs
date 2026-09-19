@@ -1,9 +1,14 @@
-﻿using FhirDiff.Core.Models;
-using FhirDiff.Core.Services;
+﻿using FhirDiff.Ai.Models;
 using FhirDiff.Ai.Services;
+using FhirDiff.Ai.Tests.AiTestHelpers;
+using FhirDiff.Core.Models;
+using FhirDiff.Core.Services;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
+using System.Net;
+using System.Text;
 using System.Text.Json;
+using Task = System.Threading.Tasks.Task;
 
 namespace FhirDiff.Ai.Tests
 {
@@ -12,12 +17,37 @@ namespace FhirDiff.Ai.Tests
         private const string OldFileName = "process-test-old-bundle.json";
         private const string NewFileName = "process-test-new-bundle.json";
         [Fact]
-        public void Process_MixBundle_CheckBundleDiffResults()
+        public async Task Process_MixBundle_CheckBundleDiffResults()
         {
             var parser = new FhirJsonParser();
             var matcher = new BundlesMatcher();
             var differ = new BundleDiffer();
-            var processor = new BundleDiffProcessor(matcher,differ, null);
+            List<ResourceChangeExplanation> aiExplanations = new List<ResourceChangeExplanation>
+            {
+                new ResourceChangeExplanation("Patient", "patient-1", "Given name changed from Sam to Samuel")
+            };
+            string innerJson = JsonSerializer.Serialize(aiExplanations);
+            string fakeGeminiResponseBody = $$"""
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      { "text": {{JsonSerializer.Serialize(innerJson)}} }
+                    ]
+                  }
+                }
+              ]
+            }
+            """;
+            var fakeResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(fakeGeminiResponseBody, Encoding.UTF8, "application/json")
+            };
+            var fakeHandler = new FakeHttpMessageHandler(fakeResponse);
+            var fakeHttpClient = new HttpClient(fakeHandler);
+            var explainer = new GeminiDiffExplainer("fake_key", fakeHttpClient);
+            var processor = new BundleDiffProcessor(matcher, differ, explainer);
             var oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName);
             var newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", NewFileName);
             var oldJson = File.ReadAllText(oldFilePath);
@@ -25,7 +55,7 @@ namespace FhirDiff.Ai.Tests
             var oldBundle = parser.Parse<Bundle>(oldJson);
             var newBundle = parser.Parse<Bundle>(newJson);
 
-            var resourceChanges = processor.Process(oldBundle, newBundle);
+            var resourceChanges = await processor.Process(oldBundle, newBundle);
 
             //Assert - Aggregates Counters
             Assert.Equal(4, resourceChanges.Changes.Count);
@@ -77,10 +107,10 @@ namespace FhirDiff.Ai.Tests
             //Parse
             var expectedOldNameRawText = JsonDocument.Parse(expectedOldNameJson).RootElement.GetRawText();
             var expectedNewNameRawText = JsonDocument.Parse(expectedNewNameJson).RootElement.GetRawText();
-           
+
             // Find the matched Patient's ResourceChange once, then check its two FieldDiffs separately
             var patientChange = resourceChanges.Changes.Single(f => f.ResourceType == "Patient" && f.ChangeType == ChangeType.Modified);
-            
+
             //Assert
             Assert.Contains(patientChange.FieldChanges, fd =>
                 fd.FieldPath == "name" &&

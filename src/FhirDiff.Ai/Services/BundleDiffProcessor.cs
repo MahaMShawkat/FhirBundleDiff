@@ -1,4 +1,5 @@
-﻿using FhirDiff.Core.Models;
+﻿using FhirDiff.Ai.Models;
+using FhirDiff.Core.Models;
 using FhirDiff.Core.Services;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
@@ -23,7 +24,7 @@ namespace FhirDiff.Ai.Services
             _explainer = explainer;
         }
 
-        public BundleDiffResult Process(Bundle oldBundle, Bundle newBundle)
+        public async Task<BundleDiffResult> Process(Bundle oldBundle, Bundle newBundle)
         {
             var resourceChanges = new List<ResourceChange>();
             var matchResults = _matcher.Match(oldBundle, newBundle);
@@ -58,7 +59,13 @@ namespace FhirDiff.Ai.Services
             }
 
             var diffResults = new BundleDiffResult(resourceChanges);
-            
+            List<ResourceChangeExplanation> explanations = await _explainer.DescribeResourceChanges(resourceChanges);
+            foreach (ResourceChangeExplanation explanation in explanations)
+            {
+                var resource = resourceChanges.Where(e => e.ResourceId == explanation.ResourceId && e.ResourceType == explanation.ResourceType).Single();
+                resource.ChangeExplanation = explanation.Explanation;
+            }
+
             return diffResults;
         }
     }
