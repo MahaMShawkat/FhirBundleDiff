@@ -8,26 +8,22 @@ using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Text.Json;
 using Task = System.Threading.Tasks.Task;
+using FhirDiff.TestHelpers;
 
 namespace FhirDiff.Ai.Tests;
 
 public class EndToEndTest
 {
-    private const string OldFileName = "Aaron697_Brekke496_2fa15bc7-8866-461a-9000-f739e425860a";
-    private const string NewFileName = "Aaron697_Stiedemann542_41166989-975d-4d17-b9de-17f94cb3eec1";
+    private const string OldFileName = "Aaron697_Brekke496_2fa15bc7-8866-461a-9000-f739e425860a.json";
+    private const string NewFileName = "Aaron697_Stiedemann542_41166989-975d-4d17-b9de-17f94cb3eec1.json";
     private static readonly JsonSerializerOptions _fhirJsonOptions = new JsonSerializerOptions().ForFhir(ModelInfo.ModelInspector);
 
     [Fact]
     public async Task Process_RealSyntheaBundles_CompletesWithoutError()
     {
         // Arrange — load real bundles
-        string oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName + ".json");
-        string oldJson = File.ReadAllText(oldFilePath);
-        Bundle? oldBundle = JsonSerializer.Deserialize<Bundle>(oldJson, _fhirJsonOptions);
-
-        string newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", NewFileName + ".json");
-        string newJson = File.ReadAllText(newFilePath);
-        Bundle? newBundle = JsonSerializer.Deserialize<Bundle>(newJson, _fhirJsonOptions);
+        Bundle? oldBundle = BundlesFetcher.GetBundleFromFile(OldFileName);
+        Bundle? newBundle = BundlesFetcher.GetBundleFromFile(NewFileName);
 
         // Arrange — fake Gemini response, in case Match() finds any real overlap
         string innerExplanations = """
@@ -65,13 +61,8 @@ public class EndToEndTest
     public async Task Process_RealApiCall_CompletesWithoutError()
     {
         // Arrange — load real bundles
-        string oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName + ".json");
-        string oldJson = File.ReadAllText(oldFilePath);
-        Bundle? oldBundle = JsonSerializer.Deserialize<Bundle>(oldJson, _fhirJsonOptions);
-
-        string newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", NewFileName + ".json");
-        string newJson = File.ReadAllText(newFilePath);
-        Bundle? newBundle = JsonSerializer.Deserialize<Bundle>(newJson, _fhirJsonOptions);
+        Bundle? oldBundle = BundlesFetcher.GetBundleFromFile(OldFileName);
+        Bundle? newBundle = BundlesFetcher.GetBundleFromFile(NewFileName);
 
         //Arrange - Explainer with real apiKey
         var config = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json", optional: false).Build();
@@ -93,13 +84,8 @@ public class EndToEndTest
     public async Task Process_RealApiCallOnManualFixture_CompletesWithoutError()
     {
         // Arrange — load real bundles
-        string oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", "process-test-old-bundle.json");
-        string oldJson = File.ReadAllText(oldFilePath);
-        Bundle? oldBundle = JsonSerializer.Deserialize<Bundle>(oldJson, _fhirJsonOptions);
-
-        string newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", "process-test-new-bundle.json");
-        string newJson = File.ReadAllText(newFilePath);
-        Bundle? newBundle = JsonSerializer.Deserialize<Bundle>(newJson, _fhirJsonOptions);
+        Bundle? oldBundle = BundlesFetcher.GetBundleFromFile("process-test-old-bundle.json");
+        Bundle? newBundle = BundlesFetcher.GetBundleFromFile("process-test-new-bundle.json");
 
         //Arrange - Explainer with real apiKey
         IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json", optional: false).Build();

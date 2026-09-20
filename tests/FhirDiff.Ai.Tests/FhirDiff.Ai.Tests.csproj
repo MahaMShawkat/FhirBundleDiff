@@ -37,6 +37,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\FhirDiff.Ai\FhirDiff.Ai.csproj" />
+		<ProjectReference Include="..\FhirDiff.TestHelpers\FhirDiff.TestHelpers.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Using Include="Xunit" />
