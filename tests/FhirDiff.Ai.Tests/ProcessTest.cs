@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using Task = System.Threading.Tasks.Task;
+using FhirDiff.TestHelpers;
 
 namespace FhirDiff.Ai.Tests
 {
@@ -19,7 +20,10 @@ namespace FhirDiff.Ai.Tests
         [Fact]
         public async Task Process_MixBundle_CheckBundleDiffResults()
         {
-            var parser = new FhirJsonParser();
+            // Arrange 
+            Bundle? oldBundle = BundlesFetcher.GetBundleFromFile(OldFileName);
+            Bundle? newBundle = BundlesFetcher.GetBundleFromFile(NewFileName);
+
             var matcher = new BundlesMatcher();
             var differ = new BundleDiffer();
             List<ResourceChangeExplanation> aiExplanations = new List<ResourceChangeExplanation>
@@ -48,13 +52,7 @@ namespace FhirDiff.Ai.Tests
             var fakeHttpClient = new HttpClient(fakeHandler);
             var explainer = new GeminiDiffExplainer("fake_key", fakeHttpClient);
             var processor = new BundleDiffProcessor(matcher, differ, explainer);
-            var oldFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", OldFileName);
-            var newFilePath = Path.Combine(AppContext.BaseDirectory, "TestData", NewFileName);
-            var oldJson = File.ReadAllText(oldFilePath);
-            var newJson = File.ReadAllText(newFilePath);
-            var oldBundle = parser.Parse<Bundle>(oldJson);
-            var newBundle = parser.Parse<Bundle>(newJson);
-
+            
             var resourceChanges = await processor.Process(oldBundle, newBundle);
 
             //Assert - Aggregates Counters
