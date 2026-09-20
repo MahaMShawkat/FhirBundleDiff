@@ -8,5 +8,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/FhirDiff.Ai.Tests/FhirDiff.Ai.Tests.csproj" />
     <Project Path="tests/FhirDiff.Core.Tests/FhirDiff.Core.Tests.csproj" />
+    <Project Path="tests/FhirDiff.TestHelpers/FhirDiff.TestHelpers.csproj" Id="c1f36744-a006-400c-b06e-95cadf029aff" />
   </Folder>
 </Solution>
