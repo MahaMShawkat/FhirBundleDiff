@@ -1,4 +1,4 @@
-﻿using FhirDiff.Core.Tests.CoreTestHelpers;
+﻿using FhirDiff.TestHelpers;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 
