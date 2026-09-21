@@ -23,6 +23,7 @@ namespace FhirDiff.Ai.Services
         private static readonly string Url = $"https://generativelanguage.googleapis.com/v1beta/models/{ModelName}:generateContent";
         private HttpClient _httpClient;
         private readonly string _apiKey;
+        private const int MaxRetries = 3;
 
         public GeminiDiffExplainer(string apiKey, HttpClient? httpClient = null)
         {
@@ -101,10 +102,16 @@ namespace FhirDiff.Ai.Services
             return contentJson + config;
         }
 
-        private async Task<string> CallLlmApi(string requestJson)
+        private async Task<string> CallLlmApi(string requestJson, int attempt = 0)
         {
             StringContent content = new StringContent(requestJson, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _httpClient.PostAsync(Url, content);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable && attempt < MaxRetries)
+            {
+                await Task.Delay(15000);
+                return await CallLlmApi(requestJson, attempt + 1);
+            }
 
             return await ExtractResultsFromContents(response);
         }
