@@ -120,23 +120,13 @@ namespace FhirDiff.Ai.Services
         {
             string result = string.Empty;
 
-            switch (response.StatusCode)
+            if(response.IsSuccessStatusCode)
             {
-                case System.Net.HttpStatusCode.OK:
-                    {
-                        result = await response.Content.ReadAsStringAsync();
-                        break;
-                    }
-                case System.Net.HttpStatusCode.TooManyRequests:
-                    {
-                        result = "Too many requests. Try again later";
-                        break;
-                    }
-                default:
-                    {
-                        response.EnsureSuccessStatusCode();
-                        break;
-                    }
+                result = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                response.EnsureSuccessStatusCode();
             }
 
             return result;
