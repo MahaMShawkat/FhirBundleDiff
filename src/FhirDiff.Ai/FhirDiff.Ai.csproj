@@ -1,13 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<PackageId>MahaMS.FhirBundleDiff</PackageId>
+		<Version>1.0.0-beta</Version>
+		<Authors>Maha M. Shawkat</Authors>
+		<Company>MahaMSh</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>fhir; bundle; diff; healthcare; interoperability; gemini; r4</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackageProjectUrl>https://github.com/MahaMShawkat/FhirBundleDiff</PackageProjectUrl>
+		<Description>
+			Compares two FHIR R4 bundles, detects added/removed/modified resources and fields, and generates plain-language explanations of clinically significant changes via Gemini.
+		</Description>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\FhirDiff.Core\FhirDiff.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\FhirDiff.Core\FhirDiff.Core.csproj" PrivateAssets="All">
+			<ReferenceOutputAssembly>true</ReferenceOutputAssembly>			
+		</ProjectReference>
+	</ItemGroup>
+	<PropertyGroup>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+	</PropertyGroup>
+
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+		</ItemGroup>
+	</Target>
+	<ItemGroup>
+		<None Include="..\..\README.md">
+			<Pack>true</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>
