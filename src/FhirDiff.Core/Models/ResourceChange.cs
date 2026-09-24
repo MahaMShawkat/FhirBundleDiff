@@ -11,7 +11,7 @@
 
     public class ResourceChange
     {
-        public ResourceChange() { }
+        public ResourceChange(string resourceType, string? resourceId, ChangeType changeType, List<FieldDiff> fieldChanges)
 
         public ResourceChange(string resourceType, string resourceId, ChangeType changeType, List<FieldDiff> fieldChanges)
         {
