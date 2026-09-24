@@ -12,8 +12,6 @@
     public class ResourceChange
     {
         public ResourceChange(string resourceType, string? resourceId, ChangeType changeType, List<FieldDiff> fieldChanges)
-
-        public ResourceChange(string resourceType, string resourceId, ChangeType changeType, List<FieldDiff> fieldChanges)
         {
             ResourceType = resourceType;
             ResourceId = resourceId;
@@ -22,10 +20,10 @@
         }
 
         public string ResourceType { get; set; }
-        public string ResourceId { get; set; }
+        public string? ResourceId { get; set; }
         public ChangeType ChangeType { get; set; }
         public List<FieldDiff> FieldChanges { get; set; }  // empty for Unchanged; single "" entry for Added/Removed; multiple for Modified
-        public string ChangeExplanation { get; set; }
+        public string? ChangeExplanation { get; set; }
     }
 
 }
