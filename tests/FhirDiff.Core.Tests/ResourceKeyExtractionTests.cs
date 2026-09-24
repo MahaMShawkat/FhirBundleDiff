@@ -31,11 +31,7 @@ namespace FhirDiff.Core.Tests
         [Fact]
         public void GetBundleResources_ExtractResourceKeyWithNullId()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "TestData", fileNameWithNullID);
-            var parser = new FhirJsonParser();
-            var json = File.ReadAllText(path);
-
-            var bundle = parser.Parse<Bundle>(json);
+            var bundle = BundlesFetcher.GetBundleFromFile(fileNameWithNullID);
             var matcher = new BundlesMatcher();
             var resourcesDic = matcher.GetBundleResources(bundle);
 
