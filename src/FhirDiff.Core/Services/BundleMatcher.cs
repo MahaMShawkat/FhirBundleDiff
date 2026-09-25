@@ -15,6 +15,10 @@ namespace FhirDiff.Core.Services
 
             foreach (var entry in bundle.Entry)
             {
+                if (entry.Resource is null)
+                {
+                    continue;
+                }
                 if (entry.Resource.Id is null)
                 {
                     resourcesWithoutId.Add(entry.Resource);
