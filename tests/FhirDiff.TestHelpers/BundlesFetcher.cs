@@ -12,6 +12,7 @@ public class BundlesFetcher
     {
         string filePath = Path.Combine(AppContext.BaseDirectory, "TestData", fileName);
         string json = File.ReadAllText(filePath);
-        return JsonSerializer.Deserialize<Bundle>(json, _fhirJsonOptions);
+        return JsonSerializer.Deserialize<Bundle>(json, _fhirJsonOptions)
+            ?? throw new JsonException($"Failed to deserialize bundle from {fileName}.");
     }
 }

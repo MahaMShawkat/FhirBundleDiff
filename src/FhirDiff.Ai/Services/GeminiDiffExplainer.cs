@@ -135,9 +135,12 @@ namespace FhirDiff.Ai.Services
         public async Task<List<ResourceChangeExplanation>> ParseLlmResponse(string responseText)
         {
             JsonElement jsonResponse = JsonDocument.Parse(responseText).RootElement;
-            string? textJson = jsonResponse.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
+            string textJson = jsonResponse.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString()
+                ?? throw new JsonException("Gemini response 'text' field was null.");
+
             JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            List<ResourceChangeExplanation> explanations = JsonSerializer.Deserialize<List<ResourceChangeExplanation>>(textJson, options);
+            List<ResourceChangeExplanation> explanations = JsonSerializer.Deserialize<List<ResourceChangeExplanation>>(textJson, options)
+                ?? throw new JsonException($"Failed to deserialize Gemini response text: {textJson}");
 
             return explanations;
         }
