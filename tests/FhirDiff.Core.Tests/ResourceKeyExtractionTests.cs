@@ -19,7 +19,7 @@ namespace FhirDiff.Core.Tests
 
             var resourcesDic = matcher.GetBundleResources(bundle);
             var firstEntry = bundle.Entry.First();
-            var expectedKey = new ResourceKey(firstEntry.Resource.TypeName, firstEntry.Resource.Id);
+            var expectedKey = new ResourceKey(firstEntry.Resource!.TypeName, firstEntry.Resource!.Id);
             var resourcesCount = resourcesDic.ResourcesWithoutId.Count() + resourcesDic.ResourcesWithId.Count();
 
 
@@ -35,7 +35,7 @@ namespace FhirDiff.Core.Tests
             var matcher = new BundlesMatcher();
             var resourcesDic = matcher.GetBundleResources(bundle);
 
-            var entriesWithoutId = bundle.Entry.Where(e => e.Resource.Id == null).ToList();
+            var entriesWithoutId = bundle.Entry.Where(e => e.Resource!.Id == null).ToList();
             var expectedWithoutIdCount = entriesWithoutId.Count;
             var expectedWithIdCount = bundle.Entry.Count - expectedWithoutIdCount;
 
