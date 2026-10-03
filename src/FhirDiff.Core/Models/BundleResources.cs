@@ -7,5 +7,6 @@ namespace FhirDiff.Core.Models
 {
     public record BundleResources(
     IReadOnlyDictionary<ResourceKey, Resource> ResourcesWithId,
+    IReadOnlyList<(ResourceKey Key, Resource Resource)> DuplicateResources,
     IReadOnlyList<Resource> ResourcesWithoutId);
 }

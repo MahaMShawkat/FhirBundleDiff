@@ -11,25 +11,33 @@ namespace FhirDiff.Core.Services
         public BundleResources GetBundleResources(Bundle bundle)
         {
             var resourcesWithId = new Dictionary<ResourceKey, Resource>();
+            var duplicateResources = new List<(ResourceKey key, Resource resource)>();
             var resourcesWithoutId = new List<Resource>();
 
             foreach (var entry in bundle.Entry)
             {
+                var resourceKey = new ResourceKey(entry.Resource?.TypeName, entry.Resource?.Id);
                 if (entry.Resource is null)
                 {
                     continue;
                 }
-                if (entry.Resource.Id is null)
+                if (entry.Resource.Id is not null)
+                {
+                    if (resourcesWithId.ContainsKey(resourceKey))
+                    {
+                        duplicateResources.Add((resourceKey, entry.Resource));
+                    }
+                    else
+                    {
+                        resourcesWithId.Add(resourceKey, entry.Resource);
+                    }
+                }                
+                else
                 {
                     resourcesWithoutId.Add(entry.Resource);
                 }
-                else
-                {
-                    var resourceKey = new ResourceKey(entry.Resource.TypeName, entry.Resource.Id);
-                    resourcesWithId.Add(resourceKey, entry.Resource);
-                }
             }
-            return new BundleResources(resourcesWithId, resourcesWithoutId);
+            return new BundleResources(resourcesWithId, duplicateResources, resourcesWithoutId);
         }
 
         public BundleMatchResult Match(Bundle oldBundle, Bundle newBundle)
@@ -56,7 +64,7 @@ namespace FhirDiff.Core.Services
                 if (!oldResourcesList.ResourcesWithId.ContainsKey(key))
                     listAddedResources.Add((key, newResource.Value));
             }
-
+             
             return new BundleMatchResult(listAddedResources, listRemovedResources, listMatchedResources, oldResourcesList.ResourcesWithoutId, newResourcesList.ResourcesWithoutId);
         }
     }
