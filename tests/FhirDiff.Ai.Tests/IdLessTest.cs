@@ -42,7 +42,7 @@ namespace FhirDiff.Ai.Tests
             HttpClient fakeHttpClient = new HttpClient(fakeHandler);
 
             GeminiDiffExplainer explainer = new GeminiDiffExplainer("fake-api-key", fakeHttpClient);
-            BundlesMatcher matcher = new BundlesMatcher();
+            BundleMatcher matcher = new BundleMatcher();
             BundleDiffer differ = new BundleDiffer();
             BundleDiffProcessor processor = new BundleDiffProcessor(matcher, differ, explainer);
             // Act

@@ -16,7 +16,7 @@ public class MatchTests
     {
         var oldBundle = BundlesFetcher.GetBundleFromFile(OldFileName);
         var newBundle = BundlesFetcher.GetBundleFromFile(NewFileName);
-        var matcher = new BundlesMatcher();
+        var matcher = new BundleMatcher();
 
         var matchResults = matcher.Match(oldBundle, newBundle);        
         var expectedRemovedKey = new ResourceKey("Observation", "obs-removed-1");

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FhirDiff.Core.Services
 {
-    public class BundlesMatcher
+    public class BundleMatcher
     {
         public BundleResources GetBundleResources(Bundle bundle)
         {

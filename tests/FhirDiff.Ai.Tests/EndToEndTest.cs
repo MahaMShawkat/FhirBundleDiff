@@ -44,7 +44,7 @@ public class EndToEndTest
         var fakeHttpClient = new HttpClient(fakeHandler);
 
         var explainer = new GeminiDiffExplainer("fake-api-key", fakeHttpClient);
-        var matcher = new BundlesMatcher();
+        var matcher = new BundleMatcher();
         var differ = new BundleDiffer();
         var processor = new BundleDiffProcessor(matcher, differ, explainer);
 
@@ -68,7 +68,7 @@ public class EndToEndTest
         var config = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json", optional: false).Build();
         string apiKey = config["Gemini:ApiKey"] ?? throw new InvalidOperationException("Missing Gemini:ApiKey");
         GeminiDiffExplainer explainer = new GeminiDiffExplainer(apiKey);
-        var matcher = new BundlesMatcher();
+        var matcher = new BundleMatcher();
         var differ = new BundleDiffer();
         var processor = new BundleDiffProcessor(matcher, differ, explainer);
 
@@ -91,7 +91,7 @@ public class EndToEndTest
         IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json", optional: false).Build();
         string apiKey = config["Gemini:ApiKey"] ?? throw new InvalidOperationException("Missing Gemini:ApiKey");
         GeminiDiffExplainer explainer = new GeminiDiffExplainer(apiKey);
-        BundlesMatcher matcher = new BundlesMatcher();
+        BundleMatcher matcher = new BundleMatcher();
         BundleDiffer differ = new BundleDiffer();
         BundleDiffProcessor processor = new BundleDiffProcessor(matcher, differ, explainer);
 

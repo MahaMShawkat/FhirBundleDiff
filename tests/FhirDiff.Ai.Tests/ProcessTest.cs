@@ -24,7 +24,7 @@ namespace FhirDiff.Ai.Tests
             Bundle? oldBundle = BundlesFetcher.GetBundleFromFile(OldFileName);
             Bundle? newBundle = BundlesFetcher.GetBundleFromFile(NewFileName);
 
-            var matcher = new BundlesMatcher();
+            var matcher = new BundleMatcher();
             var differ = new BundleDiffer();
             List<ResourceChangeExplanation> aiExplanations = new List<ResourceChangeExplanation>
             {

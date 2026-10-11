@@ -10,7 +10,7 @@ builder.Services.AddSingleton<IDiffExplainer>(sp =>
     return new GeminiDiffExplainer(apiKey);
 });
 
-builder.Services.AddSingleton<BundlesMatcher>();
+builder.Services.AddSingleton<BundleMatcher>();
 builder.Services.AddSingleton<BundleDiffer>();
 builder.Services.AddSingleton<BundleDiffProcessor>();
 

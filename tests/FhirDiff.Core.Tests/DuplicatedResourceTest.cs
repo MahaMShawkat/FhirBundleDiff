@@ -16,7 +16,7 @@ public class DuplicatedResourceTest
     {
         // Arrange
         Bundle bundle = BundlesFetcher.GetBundleFromFile(fileName);
-        BundlesMatcher matcher = new BundlesMatcher();
+        BundleMatcher matcher = new BundleMatcher();
         // Act
         BundleResources resources = matcher.GetBundleResources(bundle);
         // Assert
