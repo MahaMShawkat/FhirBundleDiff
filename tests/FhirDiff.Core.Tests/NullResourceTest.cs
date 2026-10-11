@@ -15,7 +15,7 @@ public class NullResourceTest
     {
         // Arrange
         var bundle = BundlesFetcher.GetBundleFromFile(fileName);
-        var matcher = new BundlesMatcher();
+        var matcher = new BundleMatcher();
         // Act
         var resources = matcher.GetBundleResources(bundle);
         // Assert

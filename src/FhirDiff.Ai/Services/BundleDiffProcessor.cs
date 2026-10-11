@@ -13,11 +13,11 @@ namespace FhirDiff.Ai.Services
 {
     public class BundleDiffProcessor
     {
-        private readonly BundlesMatcher _matcher;
+        private readonly BundleMatcher _matcher;
         private readonly BundleDiffer _differ;
         private readonly IDiffExplainer _explainer;
 
-        public BundleDiffProcessor(BundlesMatcher matcher, BundleDiffer differ, IDiffExplainer explainer)
+        public BundleDiffProcessor(BundleMatcher matcher, BundleDiffer differ, IDiffExplainer explainer)
         {
             _matcher = matcher;
             _differ = differ;

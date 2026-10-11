@@ -15,7 +15,7 @@ namespace FhirDiff.Core.Tests
         public void GetBundleResources_ExtractResourceKey()
         {
             var bundle = BundlesFetcher.GetBundleFromFile(fileName);
-            var matcher = new BundlesMatcher();
+            var matcher = new BundleMatcher();
 
             var resourcesDic = matcher.GetBundleResources(bundle);
             var firstEntry = bundle.Entry.First();
@@ -32,7 +32,7 @@ namespace FhirDiff.Core.Tests
         public void GetBundleResources_ExtractResourceKeyWithNullId()
         {
             var bundle = BundlesFetcher.GetBundleFromFile(fileNameWithNullID);
-            var matcher = new BundlesMatcher();
+            var matcher = new BundleMatcher();
             var resourcesDic = matcher.GetBundleResources(bundle);
 
             var entriesWithoutId = bundle.Entry.Where(e => e.Resource!.Id == null).ToList();
