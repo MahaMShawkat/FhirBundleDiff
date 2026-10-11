@@ -178,4 +178,24 @@ public class EndToEndTest
             f.ChangeExplanation == "Resource has no Id. Matching is inapplicable"
         );
     }
+    [Fact]
+public async Task DescribeResourceChanges_NoMatchedChanges_MakesNoHttpCall()
+{
+    // Arrange
+    var response = new HttpResponseMessage(HttpStatusCode.OK)
+    {
+        Content = new StringContent(
+            "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"[]\"}]}}]}")
+    };
+    var handler = new FakeHttpMessageHandler(response);
+    var explainer = new GeminiDiffExplainer("fake-key", new HttpClient(handler));
+    var fixtures = ResourceChangeFixtures.GetResourceChanges();
+        var changes = new List<ResourceChange> { fixtures.Added, fixtures.Removed, fixtures.NoId };
+
+    // Act
+    await explainer.DescribeResourceChanges(changes);
+
+    // Assert
+    Assert.Empty(handler.RequestBodies);
+}
 }
