@@ -32,10 +32,7 @@
 		</ItemGroup>
 	</Target>
 	<ItemGroup>
-		<None Include="..\..\README.md">
-			<Pack>true</Pack>
-			<PackagePath></PackagePath>
-		</None>
+		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>
