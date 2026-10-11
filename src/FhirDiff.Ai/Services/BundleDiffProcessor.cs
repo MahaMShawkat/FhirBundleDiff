@@ -62,8 +62,10 @@ namespace FhirDiff.Ai.Services
             List<ResourceChangeExplanation> explanations = await _explainer.DescribeResourceChanges(resourceChanges);
             foreach (ResourceChangeExplanation explanation in explanations)
             {
-                var resource = resourceChanges.Where(e => e.ResourceId == explanation.ResourceId && e.ResourceType == explanation.ResourceType).Single();
-                resource.ChangeExplanation = explanation.Explanation;
+                var resource = resourceChanges.FirstOrDefault(e => e.ResourceId == explanation.ResourceId && 
+                                                     e.ResourceType == explanation.ResourceType && 
+                                                     e.ChangeExplanation == null);
+                resource?.ChangeExplanation = explanation.Explanation;
             }
 
             return diffResults;
