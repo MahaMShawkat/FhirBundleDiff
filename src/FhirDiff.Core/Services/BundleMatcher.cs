@@ -16,11 +16,12 @@ namespace FhirDiff.Core.Services
 
             foreach (var entry in bundle.Entry)
             {
-                var resourceKey = new ResourceKey(entry.Resource?.TypeName, entry.Resource?.Id);
                 if (entry.Resource is null)
                 {
                     continue;
                 }
+                var resourceKey = new ResourceKey(entry.Resource.TypeName, entry.Resource.Id);
+
                 if (entry.Resource.Id is not null)
                 {
                     if (resourcesWithId.ContainsKey(resourceKey))
