@@ -27,7 +27,7 @@ public class EndToEndTest
 
         // Arrange — fake Gemini response, in case Match() finds any real overlap
         string innerExplanations = """
-        [{"ResourceType":"Patient","Id":"placeholder","Explanation":"test"}]
+        []
         """;
         string geminiEnvelope = $$"""
         {
