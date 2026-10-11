@@ -35,11 +35,20 @@ namespace FhirDiff.Ai.Services
         // Orchestrator — splits, delegates, merges
         public async Task<List<ResourceChangeExplanation>> DescribeResourceChanges(IReadOnlyList<ResourceChange> resourceChanges)
         {
-            var listResourceChangeExplanation = BuildHardcodedExplanations(GetNonMatchedResources(resourceChanges));
-            var geminiRequestJson = BuildGeminiRequestJson(GetMatchedResources(resourceChanges));
-            var LlmResponse = await CallLlmApi(geminiRequestJson);
-            List<ResourceChangeExplanation> listAiExplanation = await ParseLlmResponse(LlmResponse);
-            listResourceChangeExplanation.AddRange(listAiExplanation);
+            List<ResourceChangeExplanation> listResourceChangeExplanation = new();
+            var nonMatchList = GetNonMatchedResources(resourceChanges);
+            if (nonMatchList.Any())
+            {
+                listResourceChangeExplanation = BuildHardcodedExplanations(nonMatchList);
+            }
+            var matchList = GetMatchedResources(resourceChanges);
+            if (matchList.Any())
+            {
+                var geminiRequestJson = BuildGeminiRequestJson(matchList);
+                var LlmResponse = await CallLlmApi(geminiRequestJson);
+                List<ResourceChangeExplanation> listAiExplanation = await ParseLlmResponse(LlmResponse);
+                listResourceChangeExplanation.AddRange(listAiExplanation);
+            }
 
             return listResourceChangeExplanation;
         }
