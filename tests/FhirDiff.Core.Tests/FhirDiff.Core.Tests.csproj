@@ -42,6 +42,9 @@
 		<None Update="TestData\Abel832_Connelly992_29e51479-f742-4474-8f8e-d2607d5269f6.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="TestData\duplicated-resource-test.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="TestData\null-resource-test.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
