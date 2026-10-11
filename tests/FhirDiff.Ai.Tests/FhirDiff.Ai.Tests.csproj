@@ -50,6 +50,12 @@
 		<None Update="TestData\Aaron697_Stiedemann542_41166989-975d-4d17-b9de-17f94cb3eec1.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="TestData\IdLess-test-new-bundle.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="TestData\IdLess-test-old-bundle.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="TestData\process-test-old-bundle.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
