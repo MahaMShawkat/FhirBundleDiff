@@ -65,8 +65,12 @@ namespace FhirDiff.Core.Services
                 if (!oldResourcesList.ResourcesWithId.ContainsKey(key))
                     listAddedResources.Add((key, newResource.Value));
             }
-             
-            return new BundleMatchResult(listAddedResources, listRemovedResources, listMatchedResources, oldResourcesList.ResourcesWithoutId, newResourcesList.ResourcesWithoutId);
+            foreach (var duplicateResource in oldResourcesList.DuplicateResources)
+            {
+                listRemovedResources.Add(duplicateResource);
+            }
+
+            return new BundleMatchResult(listAddedResources, listRemovedResources, listMatchedResources, oldResourcesList.ResourcesWithoutId, newResourcesList.ResourcesWithoutId, oldResourcesList.DuplicateResources, newResourcesList.DuplicateResources);
         }
     }
 }

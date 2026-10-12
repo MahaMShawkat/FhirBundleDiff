@@ -10,5 +10,7 @@ namespace FhirDiff.Core.Models
     IReadOnlyList<(ResourceKey key, Resource resource)> Removed,
     IReadOnlyList<(ResourceKey Key, Resource Old, Resource New)> Matched,
     IReadOnlyList<Resource> OldResourcesWithoutId,
-    IReadOnlyList<Resource> NewResourcesWithoutId);
+    IReadOnlyList<Resource> NewResourcesWithoutId,
+    IReadOnlyList<(ResourceKey Key, Resource Resource)> OldDuplicateResources,
+    IReadOnlyList<(ResourceKey Key, Resource Resource)> NewDuplicateResources);
 }
