@@ -13,12 +13,5 @@ namespace FhirDiff.Core.Models
         }
 
         public List<ResourceChange> Changes { get; set; }
-        public int AddedCount => Changes.Count(c => c.ChangeType == ChangeType.Added);
-        public int RemovedCount => Changes.Count(c => c.ChangeType == ChangeType.Removed);
-        public int ModifiedCount => Changes.Count(c => c.ChangeType == ChangeType.Modified);
-        public int UnchangedCount => Changes.Count(c => c.ChangeType == ChangeType.Unchanged);
-        public int NoIdCount => Changes.Count(c => c.ChangeType == ChangeType.NoId);
-        public int DuplicateCount => Changes.Count(c => c.ChangeType == ChangeType.Duplicate);
-
     }
 }
