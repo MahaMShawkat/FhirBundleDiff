@@ -43,12 +43,7 @@ namespace FhirDiff.Ai.Services
                 resourceChanges.Add(new ResourceChange(removedResource.resource.TypeName, removedResource.resource.Id, ChangeType.Removed, new List<FieldDiff> { fieldChange }));
             }
 
-            foreach (var newNonIdResource in matchResults.NewResourcesWithoutId) //non-id to be inserted as is. no diff to be called there. AddedCount increased by one
-            {
-                resourceChanges.Add(new ResourceChange(newNonIdResource.TypeName, null, ChangeType.NoId, new List<FieldDiff>()));
-            }
-
-            foreach (var oldNonIdResource in matchResults.OldResourcesWithoutId) //non-id to be inserted as is. no diff to be called there. AddedCount increased by one
+            foreach (var oldNonIdResource in matchResults.OldResourcesWithoutId.Concat(matchResults.NewResourcesWithoutId)) //non-id to be inserted as is. no diff to be called there. AddedCount increased by one
             {
                 resourceChanges.Add(new ResourceChange(oldNonIdResource.TypeName, null, ChangeType.NoId, new List<FieldDiff>()));
             }
@@ -58,12 +53,7 @@ namespace FhirDiff.Ai.Services
                 resourceChanges.Add(_differ.Diff((matchedResource.Key, matchedResource.Old, matchedResource.New)));
             }
 
-            foreach (var duplicateResource in matchResults.OldDuplicateResources)
-            {
-                resourceChanges.Add(new ResourceChange(duplicateResource.Resource.TypeName, duplicateResource.Resource.Id, ChangeType.Duplicate, new List<FieldDiff>()));
-            }
-
-            foreach (var duplicateResource in matchResults.NewDuplicateResources)
+            foreach (var duplicateResource in matchResults.NewDuplicateResources.Concat(matchResults.OldDuplicateResources))
             {
                 resourceChanges.Add(new ResourceChange(duplicateResource.Resource.TypeName, duplicateResource.Resource.Id, ChangeType.Duplicate, new List<FieldDiff>()));
             }
