@@ -56,6 +56,12 @@
 		<None Update="TestData\IdLess-test-old-bundle.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="TestData\Process-collision-test-new-bundle.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="TestData\Process-collision-test-old-bundle.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="TestData\process-test-old-bundle.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
