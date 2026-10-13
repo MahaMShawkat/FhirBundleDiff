@@ -58,13 +58,26 @@ namespace FhirDiff.Ai.Services
                 resourceChanges.Add(_differ.Diff((matchedResource.Key, matchedResource.Old, matchedResource.New)));
             }
 
+            foreach (var duplicateResource in matchResults.OldDuplicateResources)
+            {
+                resourceChanges.Add(new ResourceChange(duplicateResource.Resource.TypeName, duplicateResource.Resource.Id, ChangeType.Duplicate, new List<FieldDiff>()));
+            }
+
+            foreach (var duplicateResource in matchResults.NewDuplicateResources)
+            {
+                resourceChanges.Add(new ResourceChange(duplicateResource.Resource.TypeName, duplicateResource.Resource.Id, ChangeType.Duplicate, new List<FieldDiff>()));
+            }
+
             var diffResults = new BundleDiffResult(resourceChanges);
             List<ResourceChangeExplanation> explanations = await _explainer.DescribeResourceChanges(resourceChanges);
             foreach (ResourceChangeExplanation explanation in explanations)
             {
-                var resource = resourceChanges.FirstOrDefault(e => e.ResourceId == explanation.ResourceId && 
-                                                     e.ResourceType == explanation.ResourceType && 
-                                                     e.ChangeExplanation == null);
+                var targetType = explanation.ChangeType ?? ChangeType.Modified;
+
+                var resource = resourceChanges.FirstOrDefault(e => e.ResourceType == explanation.ResourceType &&
+                                                                   e.ResourceId == explanation.ResourceId &&
+                                                                   e.ChangeType == targetType &&
+                                                                   e.ChangeExplanation == null);
                 resource?.ChangeExplanation = explanation.Explanation;
             }
 

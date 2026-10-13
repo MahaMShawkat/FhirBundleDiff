@@ -61,7 +61,7 @@ namespace FhirDiff.Ai.Services
 
         public List<ResourceChange> GetNonMatchedResources(IReadOnlyList<ResourceChange> resourceChanges)
         {
-            return resourceChanges.Where(r => r.ChangeType == ChangeType.Added || r.ChangeType == ChangeType.Removed || r.ChangeType == ChangeType.NoId).ToList();
+            return resourceChanges.Where(r => r.ChangeType == ChangeType.Added || r.ChangeType == ChangeType.Removed || r.ChangeType == ChangeType.NoId || r.ChangeType == ChangeType.Duplicate).ToList();
         }
 
         // Non-Matched (Added/Removed/NoId) → hardcoded template explanations
@@ -74,13 +74,16 @@ namespace FhirDiff.Ai.Services
                 switch (resourceChange.ChangeType)
                 {
                     case ChangeType.Added:
-                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource is added"));
+                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource is added", resourceChange.ChangeType));
                         break;
                     case ChangeType.Removed:
-                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource is removed"));
+                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource is removed", resourceChange.ChangeType));
                         break;
                     case ChangeType.NoId:
-                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource has no Id. Matching is inapplicable"));
+                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource has no Id. Matching is inapplicable", resourceChange.ChangeType));
+                        break;
+                    case ChangeType.Duplicate:
+                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource is a duplicate. Matching is inapplicable", resourceChange.ChangeType));
                         break;
                     default:
                         throw new ArgumentException($"Unexpected changeType '{resourceChange.ChangeType}' in non-matched resources.");
