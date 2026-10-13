@@ -45,9 +45,9 @@ namespace FhirDiff.Ai.Tests
             List<ResourceChangeExplanation> actualExplanations = explainer.BuildHardcodedExplanations(resourceChanges);
             List<ResourceChangeExplanation> expectedExplanations = new List<ResourceChangeExplanation>
             {
-                new ResourceChangeExplanation ("Patient", "Patient-1", "Resource is added"),//Added
-                new ResourceChangeExplanation("Observation", "Observation-1", "Resource is removed"),//Removed
-                new ResourceChangeExplanation("Condition", null, "Resource has no Id. Matching is inapplicable")//NoId               
+                new ResourceChangeExplanation ("Patient", "Patient-1", "Resource is added", ChangeType.Added),//Added
+                new ResourceChangeExplanation("Observation", "Observation-1", "Resource is removed", ChangeType.Removed),//Removed
+                new ResourceChangeExplanation("Condition", null, "Resource has no Id. Matching is inapplicable", ChangeType.NoId)//NoId               
             };
 
             Assert.Equal(expectedExplanations, actualExplanations);
@@ -124,9 +124,9 @@ namespace FhirDiff.Ai.Tests
             // Order must match DescribeResourceChanges' internal merge order
             List<ResourceChangeExplanation> expectedExplanations = new List<ResourceChangeExplanation>
             {
-                new ResourceChangeExplanation("Patient", "Patient-1", "Resource is added"),
-                new ResourceChangeExplanation("Observation", "Observation-1", "Resource is removed"),
-                new ResourceChangeExplanation("Condition", null, "Resource has no Id. Matching is inapplicable"),
+                new ResourceChangeExplanation("Patient", "Patient-1", "Resource is added", ChangeType.Added),
+                new ResourceChangeExplanation("Observation", "Observation-1", "Resource is removed", ChangeType.Removed),
+                new ResourceChangeExplanation("Condition", null, "Resource has no Id. Matching is inapplicable", ChangeType.NoId),
                 aiExplanations[0],
                 aiExplanations[1]
             };
