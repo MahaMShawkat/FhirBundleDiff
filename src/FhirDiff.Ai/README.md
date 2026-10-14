@@ -9,7 +9,7 @@ Built for healthcare developers and QA testers who need to verify FHIR data chan
 
 ## Data privacy
 
-This tool sends the contents of matched resources to Gemini to generate explanations. 
+This tool sends the contents of modified resources to Gemini to generate explanations. 
 If your key is on the free tier, Google may use the data to improve its products, and human reviewers may read it. 
 Do not send real patient data on a free-tier key. Use a paid key, de-identified data, or synthetic data such as Synthea bundles.
 
@@ -45,7 +45,7 @@ foreach (var change in result.Changes)
 
 1. **Match**: resources are paired by `ResourceType` + `id` and classified as Added, Removed or Matched.
 2. **Diff**: matched pairs are compared field by field, recursing into nested objects and arrays. `meta.versionId` and `meta.lastUpdated` are ignored as noise.
-3. **Explain**: modified resources are sent to Gemini, which flags clinically meaningful changes. Added, Removed, NoId, and Duplicate resources get fixed local messages, with no API call.
+3. **Explain**: modified resources are sent to Gemini, which flags clinically meaningful changes. Added, Removed, NoId, unchanged, and Duplicate resources get fixed local messages, with no API call.
 
 The diff engine does not depend on AI. `IDiffExplainer` can be replaced with your own implementation.
 
@@ -55,8 +55,8 @@ The diff engine does not depend on AI. `IDiffExplainer` can be replaced with you
 |---|---|
 | Added | Resource exists only in the new bundle |
 | Removed | Resource exists only in the old bundle |
-| Modified | Matched resource with field differences |
-| Unchanged | Matched resource with no differences |
+| Modified | Resource with field differences |
+| Unchanged | Resource with no differences |
 | NoId | Resource has no `id`, so it cannot be matched |
 | Duplicate | Repeat of a `ResourceType` + `id` already seen in the same bundle. The first occurrence is classified normally. Each repeat is reported as Duplicate and is not compared |
 
