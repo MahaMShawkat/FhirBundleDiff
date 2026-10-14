@@ -45,7 +45,7 @@ foreach (var change in result.Changes)
 
 1. **Match**: resources are paired by `ResourceType` + `id` and classified as Added, Removed or Matched.
 2. **Diff**: matched pairs are compared field by field, recursing into nested objects and arrays. `meta.versionId` and `meta.lastUpdated` are ignored as noise.
-3. **Explain**: modified resources are sent to Gemini, which flags clinically meaningful changes. Added, Removed and NoId resources get fixed local messages, with no API call.
+3. **Explain**: modified resources are sent to Gemini, which flags clinically meaningful changes. Added, Removed, NoId, and Duplicate resources get fixed local messages, with no API call.
 
 The diff engine does not depend on AI. `IDiffExplainer` can be replaced with your own implementation.
 
@@ -58,6 +58,7 @@ The diff engine does not depend on AI. `IDiffExplainer` can be replaced with you
 | Modified | Matched resource with field differences |
 | Unchanged | Matched resource with no differences |
 | NoId | Resource has no `id`, so it cannot be matched |
+| Duplicate | Repeat of a `ResourceType` + `id` already seen in the same bundle. The first occurrence is classified normally. Each repeat is reported as Duplicate and is not compared |
 
 ## Configuration
 
@@ -68,7 +69,7 @@ Transient `503` responses are retried up to 3 times.
 ## Known limitations
 
 - A partial change inside an array element is reported as one Removed and one Added entry, not as Modified.
-- Resources that repeat the same `ResourceType` + `id` within one bundle are not diffed and do not appear in the result.
+- Resources that repeat a `ResourceType` + `id` within one bundle are reported as Duplicate. Only the first occurrence is matched and compared. Repeats are not diffed.
 - Bundle entries without a `resource` are skipped.
 - The Gemini model name is hardcoded in this release.
 - Rate-limit responses (HTTP 429) are not retried and throw an exception. Free-tier keys reach this limit quickly.
