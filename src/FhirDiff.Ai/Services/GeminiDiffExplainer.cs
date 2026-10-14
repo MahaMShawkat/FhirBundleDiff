@@ -36,12 +36,12 @@ namespace FhirDiff.Ai.Services
         public async Task<List<ResourceChangeExplanation>> DescribeResourceChanges(IReadOnlyList<ResourceChange> resourceChanges)
         {
             List<ResourceChangeExplanation> listResourceChangeExplanation = new();
-            var nonMatchList = GetNonMatchedResources(resourceChanges);
+            var nonMatchList = GetNonModifiedResources(resourceChanges);
             if (nonMatchList.Any())
             {
                 listResourceChangeExplanation = BuildHardcodedExplanations(nonMatchList);
             }
-            var matchList = GetMatchedResources(resourceChanges);
+            var matchList = GetModifiedResources(resourceChanges);
             if (matchList.Any())
             {
                 var geminiRequestJson = BuildGeminiRequestJson(matchList);
@@ -53,23 +53,23 @@ namespace FhirDiff.Ai.Services
             return listResourceChangeExplanation;
         }
 
-        // Filter — Matched only (public, reusable)
-        public List<ResourceChange> GetMatchedResources(IReadOnlyList<ResourceChange> resourceChanges)
+        // Filter — Modified only (public, reusable)
+        public List<ResourceChange> GetModifiedResources(IReadOnlyList<ResourceChange> resourceChanges)
         {
-            return resourceChanges.Where(r => r.ChangeType == ChangeType.Modified || r.ChangeType == ChangeType.Unchanged).ToList();
+            return resourceChanges.Where(r => r.ChangeType == ChangeType.Modified).ToList();
         }
 
-        public List<ResourceChange> GetNonMatchedResources(IReadOnlyList<ResourceChange> resourceChanges)
+        public List<ResourceChange> GetNonModifiedResources(IReadOnlyList<ResourceChange> resourceChanges)
         {
-            return resourceChanges.Where(r => r.ChangeType == ChangeType.Added || r.ChangeType == ChangeType.Removed || r.ChangeType == ChangeType.NoId || r.ChangeType == ChangeType.Duplicate).ToList();
+            return resourceChanges.Where(r => r.ChangeType != ChangeType.Modified).ToList();
         }
 
-        // Non-Matched (Added/Removed/NoId) → hardcoded template explanations
-        public List<ResourceChangeExplanation> BuildHardcodedExplanations(IReadOnlyList<ResourceChange> nonMatchedChanges)
+        // Non-Modified (Added/Removed/NoId/Unchanged/Duplicated) → hardcoded template explanations
+        public List<ResourceChangeExplanation> BuildHardcodedExplanations(IReadOnlyList<ResourceChange> nonModifiedChanges)
         {
             var listResourcesWithExplanation = new List<ResourceChangeExplanation>();
 
-            foreach (var resourceChange in nonMatchedChanges)
+            foreach (var resourceChange in nonModifiedChanges)
             {
                 switch (resourceChange.ChangeType)
                 {
@@ -85,16 +85,19 @@ namespace FhirDiff.Ai.Services
                     case ChangeType.Duplicate:
                         listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource is a duplicate. Matching is inapplicable", resourceChange.ChangeType));
                         break;
+                    case ChangeType.Unchanged:
+                        listResourcesWithExplanation.Add(new ResourceChangeExplanation(resourceChange.ResourceType, resourceChange.ResourceId, "Resource is unchanged.", resourceChange.ChangeType));
+                        break;
                     default:
-                        throw new ArgumentException($"Unexpected changeType '{resourceChange.ChangeType}' in non-matched resources.");
+                        throw new ArgumentException($"Unexpected changeType '{resourceChange.ChangeType}' in non-modified resources.");
                 }
             }
             return listResourcesWithExplanation;
         }
 
-        private string BuildGeminiRequestJson(IReadOnlyList<ResourceChange> matchedChanges)
+        private string BuildGeminiRequestJson(IReadOnlyList<ResourceChange> Modifications)
         {
-            string resourceDataJson = JsonSerializer.Serialize(matchedChanges);
+            string resourceDataJson = JsonSerializer.Serialize(Modifications);
             var promptWithResources = "You are assisting a healthcare software developer or QA tester validating changes between two versions of FHIR resources. " +
                 "You will be given a list of resource changes, each with field-level differences." +
                 " For each resource, assess whether its changes are likely meaningful/risky to downstream systems or likely benign — do not just restate the changes." +

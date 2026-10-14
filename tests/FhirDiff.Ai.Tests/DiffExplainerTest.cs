@@ -12,33 +12,33 @@ namespace FhirDiff.Ai.Tests
     {
 
         [Fact]
-        public void GetNonMatchedResources_MixedChangeTypes_ReturnsAddedRemovedAndNoId()
+        public void GetNonModifiedResources_MixedChangeTypes_ReturnsAddedRemovedUnchangedAndNoId()
         {
             var listResourceChanges = ResourceChangeFixtures.GetResourceChanges();
             List<ResourceChange> resourceChanges = new List<ResourceChange> { listResourceChanges.Added, listResourceChanges.Removed, listResourceChanges.NoId, listResourceChanges.Modified, listResourceChanges.Unchanged };
             GeminiDiffExplainer explainer = new GeminiDiffExplainer("fake-key");
 
-            List<ResourceChange> listUnmatchedResources = explainer.GetNonMatchedResources(resourceChanges);
-            Assert.Equal(new List<ResourceChange> { listResourceChanges.Added, listResourceChanges.Removed, listResourceChanges.NoId }, listUnmatchedResources);
+            List<ResourceChange> listNonModifiedResources = explainer.GetNonModifiedResources(resourceChanges);
+            Assert.Equal(new List<ResourceChange> { listResourceChanges.Added, listResourceChanges.Removed, listResourceChanges.NoId, listResourceChanges.Unchanged }, listNonModifiedResources);
         }
 
         [Fact]
-        public void GetMatchedResources_MixedChangeTypes_ReturnsOnlyModifiedAndUnchanged()
+        public void GetModifiedResources_MixedChangeTypes_ReturnsOnlyModified()
         {
             var listResourceChanges = ResourceChangeFixtures.GetResourceChanges();
             List<ResourceChange> resourceChanges = new List<ResourceChange> { listResourceChanges.Added, listResourceChanges.Removed, listResourceChanges.NoId, listResourceChanges.Modified, listResourceChanges.Unchanged };
             GeminiDiffExplainer explainer = new GeminiDiffExplainer("fake-key");
 
-            List<ResourceChange> listMatchedResources = explainer.GetMatchedResources(resourceChanges);
-            Assert.Equal(new List<ResourceChange> { listResourceChanges.Modified, listResourceChanges.Unchanged }, listMatchedResources);
+            List<ResourceChange> listModifiedResources = explainer.GetModifiedResources(resourceChanges);
+            Assert.Equal(new List<ResourceChange> { listResourceChanges.Modified }, listModifiedResources);
         }
 
         [Fact]
-        public void GetNonMatchedResources_MixedChangeTypes_ReturnsHardCodedResourceChangeExplanation()
+        public void GetNonModifiedResources_MixedChangeTypes_ReturnsHardCodedResourceChangeExplanation()
         {
-            //added, removed, and noId
+            //added, removed, noId, and unchanged
             var listResourceChanges = ResourceChangeFixtures.GetResourceChanges();
-            List<ResourceChange> resourceChanges = new List<ResourceChange> { listResourceChanges.Added, listResourceChanges.Removed, listResourceChanges.NoId };
+            List<ResourceChange> resourceChanges = new List<ResourceChange> { listResourceChanges.Added, listResourceChanges.Removed, listResourceChanges.NoId, listResourceChanges.Unchanged };
             GeminiDiffExplainer explainer = new GeminiDiffExplainer("fake-key");
 
             //Act & Assert
@@ -47,7 +47,8 @@ namespace FhirDiff.Ai.Tests
             {
                 new ResourceChangeExplanation ("Patient", "Patient-1", "Resource is added", ChangeType.Added),//Added
                 new ResourceChangeExplanation("Observation", "Observation-1", "Resource is removed", ChangeType.Removed),//Removed
-                new ResourceChangeExplanation("Condition", null, "Resource has no Id. Matching is inapplicable", ChangeType.NoId)//NoId               
+                new ResourceChangeExplanation("Condition", null, "Resource has no Id. Matching is inapplicable", ChangeType.NoId),//NoId               
+                new ResourceChangeExplanation("Device", "Device-1", "Resource is unchanged.", ChangeType.Unchanged)//Unchanged               
             };
 
             Assert.Equal(expectedExplanations, actualExplanations);
@@ -57,14 +58,7 @@ namespace FhirDiff.Ai.Tests
 
             // Act & Assert
             var modifiedException = Assert.Throws<ArgumentException>(() => explainer.BuildHardcodedExplanations(modifiedResourceChanges));
-            Assert.Equal($"Unexpected changeType '{ChangeType.Modified}' in non-matched resources.", modifiedException.Message);
-
-            //Unchanged
-            List<ResourceChange> UnchangedResourceChanges = new List<ResourceChange> { listResourceChanges.Unchanged };
-
-            // Act & Assert
-            var unchangedException = Assert.Throws<ArgumentException>(() => explainer.BuildHardcodedExplanations(UnchangedResourceChanges));
-            Assert.Equal($"Unexpected changeType '{ChangeType.Unchanged}' in non-matched resources.", unchangedException.Message);
+            Assert.Equal($"Unexpected changeType '{ChangeType.Modified}' in non-modified resources.", modifiedException.Message);
         }
 
         [Fact]
@@ -80,11 +74,10 @@ namespace FhirDiff.Ai.Tests
             };
 
             // Hand-built "AI" explanations — these represent what Gemini would return
-            // for the two Matched resources (Modified, Unchanged)
+            // for the two Modified resources
             List<ResourceChangeExplanation> aiExplanations = new List<ResourceChangeExplanation>
             {
-                new ResourceChangeExplanation("Patient", "Patient-2", "Gender changed from male to female"),
-                new ResourceChangeExplanation("Observation", "Observation-2", "No change detected")
+                new ResourceChangeExplanation("Patient", "Patient-2", "Gender changed from male to female")
             };
             // Layer 1: the inner JSON — what ParseLlmResponse's second parse step deserializes.
             // This must match List<ResourceChangeExplanation>'s shape exactly.
@@ -127,8 +120,8 @@ namespace FhirDiff.Ai.Tests
                 new ResourceChangeExplanation("Patient", "Patient-1", "Resource is added", ChangeType.Added),
                 new ResourceChangeExplanation("Observation", "Observation-1", "Resource is removed", ChangeType.Removed),
                 new ResourceChangeExplanation("Condition", null, "Resource has no Id. Matching is inapplicable", ChangeType.NoId),
-                aiExplanations[0],
-                aiExplanations[1]
+                new ResourceChangeExplanation("Device", "Device-1", "Resource is unchanged.", ChangeType.Unchanged),
+                aiExplanations[0]
             };
 
             Assert.Equal(expectedExplanations, actualExplanations);
