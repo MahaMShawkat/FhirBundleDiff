@@ -15,6 +15,9 @@
 		<Description>
 			Compares two FHIR R4 bundles, detects added/removed/modified resources and fields, and generates plain-language explanations of clinically significant changes via Gemini.
 		</Description>
+		<RepositoryUrl>https://github.com/MahaMShawkat/FhirBundleDiff.git</RepositoryUrl>
+		<PackageReleaseNotes>Initial beta release. Matches and diffs two FHIR R4 bundles and explains modified resources with Gemini. Known limitations are listed in the README.</PackageReleaseNotes>
+		<Copyright>Copyright (c) 2026 Maha M. Shawkat</Copyright>
 	</PropertyGroup>
 
 	<ItemGroup>
