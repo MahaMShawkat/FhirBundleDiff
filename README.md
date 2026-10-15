@@ -91,6 +91,8 @@ A Gemini API key (free, from [Google AI Studio](https://aistudio.google.com/api-
 - Possible R5 support as a later milestone.
 - Possible offline/no-quota fallback as a second `IDiffExplainer` implementation.
 
-## Background
-
-This project combines a healthcare interoperability background (FHIR, HL7) with AI/ML engineering practice. Design decisions, debugging process, and lessons learned are logged session-by-session in [`docs/PROGRESS-LOG.md`](docs/PROGRESS-LOG.md).
+## History note
+On Oct 15, 2026, early commit history was rewritten to correct a mistyped author email.
+Author dates are unchanged. Committer dates show the rewrite time.
+The original history is kept on the branch `archive/pre-rewrite-history`.
+[Contributors graph](https://github.com/MahaMShawkat/FhirBundleDiff/graphs/contributors?from=7%2F11%2F2026) shows the commits on their original dates.
