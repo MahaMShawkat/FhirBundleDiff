@@ -126,5 +126,38 @@ namespace FhirDiff.Ai.Tests
 
             Assert.Equal(expectedExplanations, actualExplanations);
         }
+
+        [Fact]
+        public async Task DescribeResourceChanges_UnchangedOnly_SendsNoRequest()
+        {
+            // Arrange
+            string innerExplanations = "[]";
+            string geminiEnvelope = $$"""
+        {
+          "candidates": [
+            { "content": { "parts": [ { "text": {{JsonSerializer.Serialize(innerExplanations)}} } ] } }
+          ]
+        }
+        """;
+            HttpResponseMessage fakeResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(geminiEnvelope)
+            };
+            FakeHttpMessageHandler fakeHandler = new FakeHttpMessageHandler(fakeResponse);
+            GeminiDiffExplainer explainer = new GeminiDiffExplainer("fake-api-key", new HttpClient(fakeHandler));
+
+            List<ResourceChange> changes = new List<ResourceChange>
+            {
+                new ResourceChange("Device", "Device-1", ChangeType.Unchanged, new List<FieldDiff>())
+            };
+            // Act
+            List<ResourceChangeExplanation> result = await explainer.DescribeResourceChanges(changes);
+            // Assert
+            Assert.Empty(fakeHandler.RequestBodies);
+            ResourceChangeExplanation explanation = Assert.Single(result);
+            Assert.Equal(
+                new ResourceChangeExplanation("Device", "Device-1", "Resource is unchanged.", ChangeType.Unchanged),
+                explanation);
+        }
     }
 }
