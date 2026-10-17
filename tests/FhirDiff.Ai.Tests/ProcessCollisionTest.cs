@@ -16,7 +16,7 @@ namespace FhirDiff.Ai.Tests
         private const string OldFileName = "Process-collision-test-old-bundle.json";
         private const string NewFileName = "Process-collision-test-new-bundle.json";
         [Fact]
-        public async Task Process_AddedAndDuplicateSameKey_BothChangesReturned()
+        public async Task Process_ModifiedAndDuplicateSameKey_BothChangesReturned()
         {
             // Arrange — load real bundles
             Bundle? oldBundle = BundlesFetcher.GetBundleFromFile(OldFileName);
@@ -45,9 +45,9 @@ namespace FhirDiff.Ai.Tests
             // Act
             BundleDiffResult resourceChanges = await processor.Process(oldBundle!, newBundle!);
             // Assert - Aggregates Counters
-            Assert.Single(resourceChanges.Changes, c => c.ChangeType == ChangeType.Added);
+            Assert.Single(resourceChanges.Changes, c => c.ChangeType == ChangeType.Modified);
             Assert.Single(resourceChanges.Changes, c => c.ChangeType == ChangeType.Duplicate);
-            //Assert - Added and Duplicate Change Explanations
+            //Assert - Modified and Duplicate Change Explanations
             ResourceChange modified = Assert.Single(resourceChanges.Changes, c => c.ChangeType == ChangeType.Modified);
             ResourceChange duplicate = Assert.Single(resourceChanges.Changes, c => c.ChangeType == ChangeType.Duplicate);
             Assert.Equal("Status changed from preliminary to final", modified.ChangeExplanation);

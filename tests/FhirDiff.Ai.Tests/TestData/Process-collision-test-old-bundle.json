@@ -1,9 +1,15 @@
 {
-  "fullUrl": "urn:uuid:3a8f2c71-6d14-4e9b-a5c0-8b2e7d4f1a06",
-  "resource": {
-    "resourceType": "Observation",
-    "id": "obs-dup-1",
-    "status": "preliminary",
-    "code": { "text": "first copy" }
-  }
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:3a8f2c71-6d14-4e9b-a5c0-8b2e7d4f1a06",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-dup-1",
+        "status": "preliminary",
+        "code": { "text": "first copy" }
+      }
+    }
+  ]
 }
